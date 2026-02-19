@@ -47,6 +47,17 @@ def _convert_srt_to_plain_text(srt_text: str) -> str:
 class Youtube(DownloadBase):
     """Set of tools for handing videos."""
 
+    def _create_youtube(self, video_url: str) -> PyYouTube:
+        """Create a PyYouTube instance with appropriate auth settings."""
+        use_oauth = self.args.get("use_oauth", "False") == "True"
+        if use_oauth:
+            return PyYouTube(
+                video_url,
+                use_oauth=True,
+                allow_oauth_cache=True,
+            )
+        return PyYouTube(video_url, "WEB")
+
     def download(self):
         """Download a youtube video."""
         resolution = self.args.get("resolution", "")
@@ -55,7 +66,7 @@ class Youtube(DownloadBase):
         if not video_url:
             raise Exception("Argument `url` not given.")
 
-        video = PyYouTube(video_url)
+        video = self._create_youtube(video_url)
 
         # Filter the stream by resolution if provided,
         # else get the highest resolution
@@ -82,7 +93,7 @@ class Youtube(DownloadBase):
         lang = self.args.get("lang", "en")
         format = self.args.get("format", "text")
 
-        yt = PyYouTube(video_url)
+        yt = self._create_youtube(video_url)
         caption = yt.captions.get_by_language_code(f"a.{lang}")
 
         if not caption:

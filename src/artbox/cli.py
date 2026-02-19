@@ -352,12 +352,20 @@ def youtube_download(
             "--resolution", help="Set the quality of the downloaded video"
         ),
     ] = "",
+    use_oauth: Annotated[
+        bool,
+        typer.Option(
+            "--use-oauth",
+            help="Use OAuth authentication to bypass bot detection",
+        ),
+    ] = False,
 ) -> None:
     """Download youtube video."""
     args_dict = {
         "url": url,
         "output-path": output_path,
         "resolution": resolution,
+        "use_oauth": str(use_oauth),
     }
 
     runner = Youtube(args_dict)
@@ -390,6 +398,13 @@ def youtube_cc(
         str,
         typer.Option("--format", help="Set the CC format (srt, text)"),
     ] = "text",
+    use_oauth: Annotated[
+        bool,
+        typer.Option(
+            "--use-oauth",
+            help="Use OAuth authentication to bypass bot detection",
+        ),
+    ] = False,
 ) -> None:
     """Download youtube video CC."""
     args_dict = {
@@ -397,6 +412,7 @@ def youtube_cc(
         "output-path": output_path,
         "lang": lang,
         "format": format,
+        "use_oauth": str(use_oauth),
     }
 
     runner = Youtube(args_dict)
