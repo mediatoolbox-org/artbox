@@ -1,6 +1,13 @@
 # Release Notes
 ---
 
+# [0.9.0](https://github.com/osl-incubator/artbox/compare/0.8.0...0.9.0) (2026-02-20)
+
+
+### Features
+
+* allow google authentication for downloading from youtube ([#32](https://github.com/osl-incubator/artbox/issues/32)) ([1364121](https://github.com/osl-incubator/artbox/commit/13641218d9c078affd5de377df16fa060271f9a2))
+
 # [0.8.0](https://github.com/osl-incubator/artbox/compare/0.7.0...0.8.0) (2024-07-15)
 
 
