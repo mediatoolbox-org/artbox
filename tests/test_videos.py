@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from pytubefix.exceptions import BotDetection
+
 from artbox.videos import Video, Youtube
 
 
@@ -43,7 +45,10 @@ def test_download_from_youtube():
     ):
         params = {"output-path": TMP_PATH, "url": url}
         youtube = Youtube(params)
-        youtube.download()
+        try:
+            youtube.download()
+        except BotDetection:
+            pytest.skip("YouTube bot detection triggered, skipping in CI")
 
 
 def test_remove_audio():

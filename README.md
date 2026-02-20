@@ -16,7 +16,7 @@ order to have everything well installed, create a conda/mamba environment and
 install `artbox` there.
 
 ```bash
-$ mamba create --name artbox "python>=3.8.1,<3.12" "pygobject==3.48.1" pip
+$ mamba create --name artbox "python>=3.9,<3.14" "pygobject>=3.44.1,<3.49" pip
 $ conda activate artbox
 $ pip install artbox
 ```
@@ -123,13 +123,25 @@ $ artbox youtube download \
 ```
 
 The command above downloads using a random resolution. If you want a specific
-resolution, use the flat `--resolution`:
+resolution, use the flag `--resolution`:
 
 ```bash
 $ artbox youtube download \
     --url https://www.youtube.com/watch?v=zw47_q9wbBE \
     --output-path /tmp/artbox/ \
     --resolution 360p
+```
+
+If you encounter bot detection errors, use the `--use-oauth` flag to
+authenticate via your Google account. The first time you use it, you will be
+prompted to open a URL and enter a code. Credentials are cached for subsequent
+downloads:
+
+```bash
+$ artbox youtube download \
+    --url https://www.youtube.com/watch?v=zw47_q9wbBE \
+    --output-path /tmp/artbox/ \
+    --use-oauth
 ```
 
 ### Create a song based on the musical notes
