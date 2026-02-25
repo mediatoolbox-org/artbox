@@ -5,6 +5,7 @@ import typer
 from typing_extensions import Annotated
 
 from artbox import __version__
+from artbox.render import Render
 from artbox.sounds import Sound
 from artbox.speech import SpeechFromText, SpeechToText
 from artbox.videos import Video, Youtube
@@ -38,11 +39,17 @@ app_youtube = typer.Typer(
     help="YouTube processing commands for Artbox.",
     short_help="YouTube processing commands.",
 )
+app_render = typer.Typer(
+    name="render",
+    help="Render a video from a YAML project configuration.",
+    short_help="Render video from project config.",
+)
 
 app.add_typer(app_sound, name="sound")
 app.add_typer(app_video, name="video")
 app.add_typer(app_speech, name="speech")
 app.add_typer(app_youtube, name="youtube")
+app.add_typer(app_render, name="render")
 
 
 @app.callback(invoke_without_command=True)
@@ -417,3 +424,30 @@ def youtube_cc(
 
     runner = Youtube(args_dict)
     runner.download_captions()
+
+
+@app_render.callback(invoke_without_command=True)
+def render_project(
+    project: Annotated[
+        str,
+        typer.Option(
+            "--project",
+            help="Path to the YAML project configuration file.",
+        ),
+    ] = "",
+    output: Annotated[
+        str,
+        typer.Option(
+            "--output",
+            help="Output directory for the rendered video.",
+        ),
+    ] = "",
+) -> None:
+    """Render a video from a YAML project configuration."""
+    if not project:
+        typer.echo("Error: --project is required.")
+        raise typer.Exit(1)
+
+    renderer = Render()
+    output_dir = output if output else None
+    renderer.render(project, output_dir)

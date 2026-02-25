@@ -1,0 +1,223 @@
+"""Tests for the render module."""
+
+import os
+import tempfile
+
+from pathlib import Path
+
+import pytest
+import yaml
+
+from jsonschema import ValidationError
+
+from artbox.render import (
+    Render,
+    _float_to_edge_tts_percent,
+    _float_to_edge_tts_pitch,
+    _resolve_language,
+)
+
+
+TMP_PATH = Path("/tmp/artbox")
+os.makedirs(TMP_PATH, exist_ok=True)
+
+
+# --- Unit tests for helper functions ---
+
+
+class TestHelperFunctions:
+    """Tests for converter and resolver helper functions."""
+
+    def test_float_to_percent_neutral(self):
+        """Test neutral volume/speed conversion."""
+        assert _float_to_edge_tts_percent(1.0) == "+0%"
+
+    def test_float_to_percent_decrease(self):
+        """Test decreased volume/speed conversion."""
+        assert _float_to_edge_tts_percent(0.8) == "-20%"
+
+    def test_float_to_percent_increase(self):
+        """Test increased volume/speed conversion."""
+        assert _float_to_edge_tts_percent(1.1) == "+10%"
+
+    def test_float_to_pitch_neutral(self):
+        """Test neutral pitch conversion."""
+        assert _float_to_edge_tts_pitch(1.0) == "+0Hz"
+
+    def test_float_to_pitch_increase(self):
+        """Test increased pitch conversion."""
+        assert _float_to_edge_tts_pitch(1.2) == "+40Hz"
+
+    def test_float_to_pitch_decrease(self):
+        """Test decreased pitch conversion."""
+        assert _float_to_edge_tts_pitch(0.9) == "-20Hz"
+
+    def test_resolve_language_named(self):
+        """Test language name resolution."""
+        assert _resolve_language("spanish") == "es"
+        assert _resolve_language("English") == "en"
+
+    def test_resolve_language_code(self):
+        """Test language code passthrough."""
+        assert _resolve_language("pt") == "pt"
+        assert _resolve_language("en-US") == "en-US"
+
+
+# --- Schema validation tests ---
+
+
+def _make_valid_config() -> dict:
+    """Create a minimal valid project configuration."""
+    return {
+        "name": "test-project",
+        "global": {
+            "audio": {
+                "language": "english",
+                "gender": "female",
+                "volume": 1.0,
+                "pitch": 1.0,
+                "speed": 1.0,
+            },
+            "pause-after": 3,
+        },
+        "source": {"type": "image"},
+        "slides": [
+            {
+                "slide": 1,
+                "background": {"path": "slide1.png"},
+                "audio": {"text": "Hello world"},
+                "pause-after": 2,
+            }
+        ],
+    }
+
+
+class TestSchemaValidation:
+    """Tests for YAML schema validation."""
+
+    def test_valid_config(self):
+        """Test that a valid configuration passes validation."""
+        renderer = Render()
+        config = _make_valid_config()
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".yaml", mode="w", delete=False
+        ) as f:
+            yaml.dump(config, f)
+            tmp_path = f.name
+
+        try:
+            result = renderer.load_and_validate(tmp_path)
+            assert result["name"] == "test-project"
+            assert len(result["slides"]) == 1
+        finally:
+            os.unlink(tmp_path)
+
+    def test_valid_pdf_config(self):
+        """Test that a valid PDF configuration passes validation."""
+        renderer = Render()
+        config = _make_valid_config()
+        config["source"] = {"type": "pdf", "path": "slides.pdf"}
+        config["slides"][0]["background"] = {"page": 1}
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".yaml", mode="w", delete=False
+        ) as f:
+            yaml.dump(config, f)
+            tmp_path = f.name
+
+        try:
+            result = renderer.load_and_validate(tmp_path)
+            assert result["source"]["type"] == "pdf"
+        finally:
+            os.unlink(tmp_path)
+
+    def test_missing_name_raises(self):
+        """Test that missing 'name' field raises ValidationError."""
+        renderer = Render()
+        config = _make_valid_config()
+        del config["name"]
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".yaml", mode="w", delete=False
+        ) as f:
+            yaml.dump(config, f)
+            tmp_path = f.name
+
+        try:
+            with pytest.raises(ValidationError):
+                renderer.load_and_validate(tmp_path)
+        finally:
+            os.unlink(tmp_path)
+
+    def test_missing_slides_raises(self):
+        """Test that missing 'slides' field raises ValidationError."""
+        renderer = Render()
+        config = _make_valid_config()
+        del config["slides"]
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".yaml", mode="w", delete=False
+        ) as f:
+            yaml.dump(config, f)
+            tmp_path = f.name
+
+        try:
+            with pytest.raises(ValidationError):
+                renderer.load_and_validate(tmp_path)
+        finally:
+            os.unlink(tmp_path)
+
+    def test_invalid_source_type_raises(self):
+        """Test that an invalid source type raises ValidationError."""
+        renderer = Render()
+        config = _make_valid_config()
+        config["source"]["type"] = "docx"
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".yaml", mode="w", delete=False
+        ) as f:
+            yaml.dump(config, f)
+            tmp_path = f.name
+
+        try:
+            with pytest.raises(ValidationError):
+                renderer.load_and_validate(tmp_path)
+        finally:
+            os.unlink(tmp_path)
+
+    def test_invalid_gender_raises(self):
+        """Test that an invalid gender raises ValidationError."""
+        renderer = Render()
+        config = _make_valid_config()
+        config["global"]["audio"]["gender"] = "robot"
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".yaml", mode="w", delete=False
+        ) as f:
+            yaml.dump(config, f)
+            tmp_path = f.name
+
+        try:
+            with pytest.raises(ValidationError):
+                renderer.load_and_validate(tmp_path)
+        finally:
+            os.unlink(tmp_path)
+
+    def test_extra_field_raises(self):
+        """Test that extra fields raise ValidationError."""
+        renderer = Render()
+        config = _make_valid_config()
+        config["unexpected_field"] = "bad"
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".yaml", mode="w", delete=False
+        ) as f:
+            yaml.dump(config, f)
+            tmp_path = f.name
+
+        try:
+            with pytest.raises(ValidationError):
+                renderer.load_and_validate(tmp_path)
+        finally:
+            os.unlink(tmp_path)

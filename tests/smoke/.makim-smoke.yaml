@@ -1,0 +1,41 @@
+groups:
+  artbox:
+    targets:
+      all:
+        help: Run all smoke tests
+        dependencies:
+          - target: artbox.render-image
+          - target: artbox.speech-from-text
+
+      render-image:
+        help: Test the 'artbox render' command with an image-based project
+        shell: bash
+        run: |
+          mkdir -p /tmp/artbox-smoke/out
+          cp tests/smoke/test_project.yaml /tmp/artbox-smoke/test_project.yaml
+
+          # Create a dummy image
+          python -c "from PIL import Image; Image.new('RGB', (100, 100)).save('/tmp/artbox-smoke/slide1.png')"
+
+          artbox render --project /tmp/artbox-smoke/test_project.yaml
+
+          # Verify output
+          if [ ! -f "/tmp/artbox-smoke/out/smoke-test.mp4" ]; then
+            echo "Error: Output video not generated"
+            exit 1
+          fi
+          echo "Render test passed"
+
+      speech-from-text:
+        help: Test the 'artbox speech from-text' command
+        shell: bash
+        run: |
+          mkdir -p /tmp/artbox-smoke
+          echo "hello world" > /tmp/artbox-smoke/text.txt
+          artbox speech from-text --title "smoke" --input-path /tmp/artbox-smoke/text.txt --output-path /tmp/artbox-smoke/speech.mp3
+
+          if [ ! -f "/tmp/artbox-smoke/speech.mp3" ]; then
+            echo "Error: Speech file not generated"
+            exit 1
+          fi
+          echo "Speech test passed"

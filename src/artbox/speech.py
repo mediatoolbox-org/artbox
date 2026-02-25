@@ -10,6 +10,7 @@ import random
 
 from abc import ABC
 from pathlib import Path
+from typing import Literal, cast
 
 import edge_tts
 import gtts
@@ -110,7 +111,11 @@ class SpeechEngineMSEdgeTTS(SpeechFromTextEngineBase):
 
         params = {"Locale": lang} if "-" in lang else {"Language": lang}
         voices = await VoicesManager.create()
-        voice_options = voices.find(Gender="Female", **params)
+
+        gender_str = self.args.get("gender", "Female")
+        gender_literal = cast(Literal["Female", "Male"], gender_str)
+
+        voice_options = voices.find(Gender=gender_literal, **params)
 
         communicate = edge_tts.Communicate(
             text=text,

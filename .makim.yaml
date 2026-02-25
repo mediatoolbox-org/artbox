@@ -45,6 +45,11 @@ groups:
         dependencies:
           - target: tests.unittest
           - target: tests.linter
+          - target: tests.smoke
+
+      smoke:
+        help: run smoke tests
+        run: makim --file tests/smoke/.makim-smoke.yaml artbox.all
 
   docs:
     targets:
