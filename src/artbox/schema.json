@@ -25,6 +25,10 @@
               "type": "string",
               "description": "Language for TTS (e.g. 'en', 'spanish', 'pt')."
             },
+            "voice-id": {
+              "type": "string",
+              "description": "Specific edge-tts voice ID (e.g. 'en-US-AriaNeural'). Overrides random voice selection."
+            },
             "gender": {
               "type": "string",
               "enum": ["male", "female"],
@@ -109,6 +113,10 @@
               "text": {
                 "type": "string",
                 "description": "Text to convert to speech via TTS."
+              },
+              "voice-id": {
+                "type": "string",
+                "description": "Per-slide edge-tts voice ID override."
               },
               "path": {
                 "type": "string",

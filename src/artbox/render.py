@@ -16,6 +16,7 @@ from moviepy.editor import (
     ImageClip,
     concatenate_videoclips,
 )
+from PIL import Image
 
 from artbox.speech import SpeechFromText
 
@@ -148,7 +149,7 @@ class Render:
         project_dir: str,
     ) -> str:
         """
-        Resolve the background image path for a slide.
+        Resolve the background image path for a slide; ensure even dimensions.
 
         Parameters
         ----------
@@ -162,7 +163,7 @@ class Render:
         Returns
         -------
         str
-            Absolute path to the background image file.
+            Absolute path to the background image file with even dimensions.
         """
         bg = slide_config.get("background", {})
         source_type = source_config.get("type", "image")
@@ -170,6 +171,20 @@ class Render:
         if source_type == "image":
             img_path = bg.get("path", "")
             resolved = Path(project_dir) / img_path
+
+            img = Image.open(resolved)
+            w, h = img.size
+            if w % 2 != 0 or h % 2 != 0:
+                new_w = w - (w % 2)
+                new_h = h - (h % 2)
+                resized_img = img.resize((new_w, new_h))
+                tmp_file = tempfile.NamedTemporaryFile(
+                    suffix=".png", delete=False
+                )
+                resized_img.save(tmp_file.name, "PNG")
+                self._tmp_files.append(tmp_file.name)
+                return tmp_file.name
+
             return str(resolved.resolve())
 
         if source_type == "pdf":
@@ -187,8 +202,22 @@ class Render:
                 dpi=200,
             )
 
-            tmp_file = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
-            images[0].save(tmp_file.name, "PNG")
+            pdf_img = images[0]
+            w, h = pdf_img.size
+            if w % 2 != 0 or h % 2 != 0:
+                new_w = w - (w % 2)
+                new_h = h - (h % 2)
+                resized_img = pdf_img.resize((new_w, new_h))
+                tmp_file = tempfile.NamedTemporaryFile(
+                    suffix=".png", delete=False
+                )
+                resized_img.save(tmp_file.name, "PNG")
+            else:
+                tmp_file = tempfile.NamedTemporaryFile(
+                    suffix=".png", delete=False
+                )
+                pdf_img.save(tmp_file.name, "PNG")
+
             self._tmp_files.append(tmp_file.name)
             return tmp_file.name
 
@@ -238,6 +267,9 @@ class Render:
             pitch = audio_config.get("pitch", global_audio.get("pitch", 1.0))
             lang = _resolve_language(global_audio.get("language", "en"))
             gender = global_audio.get("gender", "female")
+            voice_id = audio_config.get(
+                "voice-id", global_audio.get("voice-id")
+            )
 
             # Write text to a temp file for SpeechFromText
             text_file = tempfile.NamedTemporaryFile(
@@ -264,6 +296,8 @@ class Render:
                 "pitch": _float_to_edge_tts_pitch(pitch),
                 "gender": gender.capitalize(),
             }
+            if voice_id is not None:
+                args["voice_id"] = voice_id
 
             speech = SpeechFromText(args)
             speech.convert()

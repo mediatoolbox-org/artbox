@@ -117,9 +117,14 @@ class SpeechEngineMSEdgeTTS(SpeechFromTextEngineBase):
 
         voice_options = voices.find(Gender=gender_literal, **params)
 
+        voice_id = self.args.get("voice_id")
+        selected_voice = (
+            voice_id if voice_id else random.choice(voice_options)["Name"]
+        )
+
         communicate = edge_tts.Communicate(
             text=text,
-            voice=random.choice(voice_options)["Name"],
+            voice=selected_voice,
             rate=rate,
             volume=volume,
             pitch=pitch,
@@ -133,11 +138,7 @@ class SpeechEngineMSEdgeTTS(SpeechFromTextEngineBase):
 
     def convert(self) -> None:
         """Convert text to audio speech."""
-        loop = asyncio.get_event_loop_policy().get_event_loop()
-        try:
-            loop.run_until_complete(self.async_convert())
-        finally:
-            loop.close()
+        asyncio.run(self.async_convert())
 
 
 class SpeechToText(Speech):
