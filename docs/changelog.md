@@ -1,6 +1,13 @@
 # Release Notes
 ---
 
+# [0.10.0](https://github.com/mediatoolbox-org/artbox/compare/0.9.0...0.10.0) (2026-02-25)
+
+
+### Features
+
+* Add project rendering feature ([#33](https://github.com/mediatoolbox-org/artbox/issues/33)) ([1e72edc](https://github.com/mediatoolbox-org/artbox/commit/1e72edc2882e427f15f87695928bcfe5ab21578a))
+
 # [0.9.0](https://github.com/osl-incubator/artbox/compare/0.8.0...0.9.0) (2026-02-20)
 
 
