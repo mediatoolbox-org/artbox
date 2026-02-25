@@ -11,5 +11,6 @@ dependencies:
   - poetry
   - nodejs # used by semantic-release
   - shellcheck
+  - poppler
   - pip:
       - paginate

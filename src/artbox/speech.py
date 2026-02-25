@@ -10,6 +10,7 @@ import random
 
 from abc import ABC
 from pathlib import Path
+from typing import Literal, cast
 
 import edge_tts
 import gtts
@@ -110,11 +111,20 @@ class SpeechEngineMSEdgeTTS(SpeechFromTextEngineBase):
 
         params = {"Locale": lang} if "-" in lang else {"Language": lang}
         voices = await VoicesManager.create()
-        voice_options = voices.find(Gender="Female", **params)
+
+        gender_str = self.args.get("gender", "Female")
+        gender_literal = cast(Literal["Female", "Male"], gender_str)
+
+        voice_options = voices.find(Gender=gender_literal, **params)
+
+        voice_id = self.args.get("voice_id")
+        selected_voice = (
+            voice_id if voice_id else random.choice(voice_options)["Name"]
+        )
 
         communicate = edge_tts.Communicate(
             text=text,
-            voice=random.choice(voice_options)["Name"],
+            voice=selected_voice,
             rate=rate,
             volume=volume,
             pitch=pitch,
@@ -128,11 +138,7 @@ class SpeechEngineMSEdgeTTS(SpeechFromTextEngineBase):
 
     def convert(self) -> None:
         """Convert text to audio speech."""
-        loop = asyncio.get_event_loop_policy().get_event_loop()
-        try:
-            loop.run_until_complete(self.async_convert())
-        finally:
-            loop.close()
+        asyncio.run(self.async_convert())
 
 
 class SpeechToText(Speech):

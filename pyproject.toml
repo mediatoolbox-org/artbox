@@ -29,6 +29,9 @@ dependencies = [
   "matplotlib<=3.9",
   "scipy<1.23",
   "librosa>=0.10.1",
+  "pyyaml>=6.0",
+  "jsonschema>=4.0",
+  "pdf2image>=1.16",
 ]
 
 [project.scripts]
@@ -42,6 +45,7 @@ build-backend = "poetry.core.masonry.api"
 packages = [
   {include = "artbox", from = "src"},
 ]
+include = ["src/artbox/*.json"]
 exclude = [
   ".git/*",
   ".env*",
@@ -134,5 +138,8 @@ module = [
   "ffmpeg",
   "matplotlib.pyplot",
   "matplotlib",
+  "yaml",
+  "jsonschema",
+  "pdf2image",
 ]
 ignore_missing_imports = true
