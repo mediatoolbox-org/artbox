@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import re
+import tempfile
 
 from abc import ABC, abstractmethod
 from typing import Any
@@ -126,101 +127,158 @@ class FFmpegEngine(BaseVideoEngine):
             }
         )
 
+    def _render_slide_to_ts(
+        self,
+        idx: int,
+        instr: dict[str, Any],
+        tmpdir: str,
+        pbar: tqdm,
+    ) -> str:
+        """Render a single slide to a TS file."""
+        ts_output = os.path.join(tmpdir, f"slide_{idx:04d}.ts")
+
+        v_stream = ffmpeg.input(
+            instr["img"],
+            format="image2",
+            loop=1,
+            framerate=self.fps,
+        )
+
+        if instr["audio"]:
+            a_stream = (
+                ffmpeg.input(instr["audio"])
+                .audio.filter("apad")
+                .filter("atrim", duration=instr["dur"])
+                .filter("asetpts", "PTS-STARTPTS")
+            )
+        else:
+            a_stream = ffmpeg.input(
+                "anullsrc",
+                f="lavfi",
+                t=instr["dur"],
+                r="24000",
+                cl="mono",
+            ).audio
+
+        v_stream = v_stream.trim(duration=instr["dur"]).setpts("PTS-STARTPTS")
+
+        stream = ffmpeg.output(
+            v_stream,
+            a_stream,
+            ts_output,
+            vcodec="libx264",
+            acodec="aac",
+            pix_fmt="yuv420p",
+            r=self.fps,
+            video_track_timescale=90000,
+            f="mpegts",  # Force TS format for concat
+        ).overwrite_output()
+
+        process = stream.run_async(pipe_stdout=False, pipe_stderr=True)
+
+        frame_pattern = re.compile(r"frame=\s*(\d+)")
+        buffer = ""
+        last_frame = 0
+
+        while True:
+            char = process.stderr.read(1)
+            if not char and process.poll() is not None:
+                break
+
+            char_decoded = char.decode("utf-8", errors="replace")
+            buffer += char_decoded
+
+            if char_decoded in {"\r", "\n"}:
+                match = frame_pattern.search(buffer)
+                if match:
+                    current_frame = int(match.group(1))
+                    if current_frame > last_frame:
+                        pbar.update(current_frame - last_frame)
+                        last_frame = current_frame
+                buffer = ""
+
+        process.wait()
+        if process.returncode != 0:
+            raise ffmpeg.Error(f"ffmpeg failed on slide {idx}", b"", b"")
+
+        # Catch up any remaining frames
+        if last_frame < instr["frames"]:
+            pbar.update(instr["frames"] - last_frame)
+
+        return ts_output
+
     def render(self) -> None:
-        """Build the FFMPEG filter graph and execute it."""
+        """Build intermediate TS files for each slide and stream-copy them."""
         if not self.slides:
             raise ValueError("No slides to render.")
 
-        streams = []
-        total_frames = 0
+        os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
 
+        total_frames = 0
+        slide_instructions = []
+
+        # PRECALCULATE DURATIONS
         for slide in self.slides:
             img_path = slide["image"]
             audio_path = slide["audio"]
             pause = float(slide["pause"])
 
-            # 1. Video stream for this slide
-            # We loop the single image frame infinitely. We'll cut it to
-            # the exact duration later using trim/setpts.
-            v_stream = ffmpeg.input(img_path, loop=1, framerate=self.fps)
-
-            # 2. Audio stream for this slide
             if audio_path:
-                # If there's an audio file, probe it for duration
-
                 probe = ffmpeg.probe(audio_path)
                 audio_dur = float(probe["format"]["duration"])
-
-                a_stream = ffmpeg.input(audio_path).audio
-
-                if pause > 0:
-                    # Pad the end of the audio with empty silence
-                    # apad adds infinite silence, so we slice it using atrim
-                    total_dur = audio_dur + pause
-                    a_stream = a_stream.filter("apad").filter(
-                        "atrim", duration=total_dur
-                    )
+                total_dur = audio_dur + pause
             else:
-                # Silent slide
                 total_dur = pause if pause > 0 else 3.0
-                # Generate silence using anullsrc for the duration
-                a_stream = ffmpeg.input(
-                    "anullsrc", f="lavfi", t=total_dur
-                ).audio
 
-            # Now trim the infinitely looping image to match the audio duration
-            v_stream = v_stream.trim(duration=total_dur).setpts("PTS-STARTPTS")
+            frames_for_slide = int(total_dur * self.fps)
+            total_frames += frames_for_slide
 
-            streams.append(v_stream)
-            streams.append(a_stream)
-            total_frames += int(total_dur * self.fps)
+            slide_instructions.append(
+                {
+                    "img": img_path,
+                    "audio": audio_path,
+                    "dur": total_dur,
+                    "frames": frames_for_slide,
+                }
+            )
 
-        # 3. Concatenate all streams
-        # ffmpeg.concat takes the streams in order: v1, a1, v2, a2...
-        joined = ffmpeg.concat(*streams, v=1, a=1)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ts_files = []
 
-        # 4. Output the final file
-        # Pix_fmt yuv420p ensures compatibility with standard players
-        os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
+            try:
+                with tqdm(
+                    total=total_frames, desc="FFmpeg - Building slides"
+                ) as pbar:
+                    # RENDER EACH SLIDE
+                    for idx, instr in enumerate(slide_instructions):
+                        ts_file = self._render_slide_to_ts(
+                            idx, instr, tmpdir, pbar
+                        )
+                        ts_files.append(ts_file)
 
-        output = ffmpeg.output(
-            joined.node[0],  # The video stream from concat
-            joined.node[1],  # The audio stream from concat
-            self.output_path,
-            vcodec="libx264",
-            acodec="aac",
-            pix_fmt="yuv420p",
-            r=self.fps,
-        ).overwrite_output()
+            except ffmpeg.Error:
+                print("FFmpeg slide rendering failed.")
+                raise
 
-        try:
-            process = output.run_async(pipe_stdout=True, pipe_stderr=True)
-            frame_pattern = re.compile(r"frame=\s*(\d+)")
+            # CONCATENATE ALL SLIDES
+            concat_path = os.path.join(tmpdir, "concat.txt")
+            with open(concat_path, "w") as f:
+                for ts in ts_files:
+                    f.write(f"file '{ts}'\n")
 
-            with tqdm(
-                total=total_frames, desc="FFmpeg - Building video"
-            ) as pbar:
-                buffer = ""
-                while True:
-                    # Read 1 byte at a time; ffmpeg uses \r to overwrite
-                    char = process.stderr.read(1)
-                    if not char and process.poll() is not None:
-                        break
+            print("Multiplexing complete video stream...")
 
-                    char_decoded = char.decode("utf-8", errors="replace")
-                    buffer += char_decoded
+            concat_cmd = ffmpeg.input(concat_path, format="concat", safe=0)
+            stream = ffmpeg.output(
+                concat_cmd,
+                self.output_path,
+                c="copy",  # Copy streams don't encode, so instant!
+            ).overwrite_output()
 
-                    if char_decoded in {"\r", "\n"}:
-                        match = frame_pattern.search(buffer)
-                        if match:
-                            current_frame = int(match.group(1))
-                            if current_frame > pbar.n:
-                                pbar.update(current_frame - pbar.n)
-                        buffer = ""
-
-            if process.returncode != 0:
-                raise ffmpeg.Error("ffmpeg failed", b"", b"")
-
-        except ffmpeg.Error:
-            print("FFmpeg rendering failed.")
-            raise
+            try:
+                stream.run(capture_stdout=True, capture_stderr=True)
+            except ffmpeg.Error as e:
+                print("FFmpeg stream multiplexing failed.")
+                if e.stderr:
+                    print(e.stderr.decode("utf-8", errors="replace"))
+                raise
