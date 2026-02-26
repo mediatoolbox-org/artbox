@@ -1,6 +1,15 @@
 # Release Notes
 ---
 
+# [0.11.0](https://github.com/mediatoolbox-org/artbox/compare/0.10.0...0.11.0) (2026-02-26)
+
+
+### Features
+
+* Add init command to generate artbox yaml from pptx and pdf ([#35](https://github.com/mediatoolbox-org/artbox/issues/35)) ([27fae90](https://github.com/mediatoolbox-org/artbox/commit/27fae909d6197e19ca8744f8114f7b0170001f0b))
+* Add support for engine rendering with ffmpeg ([#34](https://github.com/mediatoolbox-org/artbox/issues/34)) ([8dabe05](https://github.com/mediatoolbox-org/artbox/commit/8dabe05529796c24b6306b17b02a57e8bf7e8046))
+* Add support for openai-tts ([#36](https://github.com/mediatoolbox-org/artbox/issues/36)) ([8d8dfbc](https://github.com/mediatoolbox-org/artbox/commit/8d8dfbc27f9c4b9400e8efbb91a0c6d3200d00d1))
+
 # [0.10.0](https://github.com/mediatoolbox-org/artbox/compare/0.9.0...0.10.0) (2026-02-25)
 
 
