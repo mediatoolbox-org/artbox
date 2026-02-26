@@ -49,14 +49,14 @@ groups:
           touch /tmp/artbox-smoke/test.pdf
 
           # Create a dummy PPTX with python-pptx
-          cmd = "from pptx import Presentation\n"
-          cmd = "prs = Presentation()\n"
-          cmd = "slide = prs.slides.add_slide(prs.slide_layouts[0])\n"
-          cmd = "text_frame = slide.notes_slide.notes_text_frame\n"
-          cmd = "text_frame.text = 'Smoke test speaker note.'\n"
-          cmd = "prs.save('/tmp/artbox-smoke/test.pptx')\n"
+          CMD="from pptx import Presentation\n"
+          CMD="${CMD}prs = Presentation()\n"
+          CMD="${CMD}slide = prs.slides.add_slide(prs.slide_layouts[0])\n"
+          CMD="${CMD}text_frame = slide.notes_slide.notes_text_frame\n"
+          CMD="${CMD}text_frame.text = 'Smoke test speaker note.'\n"
+          CMD="${CMD}prs.save('/tmp/artbox-smoke/test.pptx')\n"
 
-          python -c "${cmd}"
+          echo -e "$CMD" | python
 
           artbox init --source-pdf /tmp/artbox-smoke/test.pdf --notes-pptx /tmp/artbox-smoke/test.pptx --output /tmp/artbox-smoke/test_init.yaml
 
