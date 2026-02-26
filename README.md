@@ -29,6 +29,22 @@ For the following examples, create the a temporary folder for artbox:
 $ mkdir /tmp/artbox
 ```
 
+### Generate a project configuration
+
+If you have exported your presentation slides as a PDF and your presentation
+notes as a PPTX from tools like Canva, you can automatically generate an
+`artbox` project configuration file:
+
+```bash
+$ artbox init \
+    --source-pdf /tmp/artbox/presentation.pdf \
+    --notes-pptx /tmp/artbox/presentation.pptx \
+    --output /tmp/artbox/project.yaml
+```
+
+This will extract the speaker notes for every slide and automatically format a
+`.yaml` file that is ready to be parsed by `artbox render`.
+
 ### Convert text to audio
 
 By default, the `artbox speech` uses

@@ -73,6 +73,9 @@ jobs:
       - name: Run tests
         run: makim tests.unittest
 
+      - name: Run smoke tests
+        run: makim tests.smoke
+
   linter-and-docs:
     needs: check-branch
     runs-on: ubuntu-latest

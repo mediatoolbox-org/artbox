@@ -33,6 +33,7 @@ dependencies = [
   "pdf2image>=1.16",
   "ffmpeg-python>=0.2.0",
   "types-tqdm (>=4.67.3.20260205,<5.0.0.0)",
+  "python-pptx>=0.6.0",
 ]
 
 [project.scripts]

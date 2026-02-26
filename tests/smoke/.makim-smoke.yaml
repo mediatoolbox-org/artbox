@@ -6,6 +6,7 @@ groups:
         dependencies:
           - target: artbox.render-image
           - target: artbox.speech-from-text
+          - target: artbox.init-project
 
       render-image:
         help: Test the 'artbox render' command with an image-based project
@@ -39,3 +40,35 @@ groups:
             exit 1
           fi
           echo "Speech test passed"
+
+      init-project:
+        help: Test the 'artbox init' command
+        shell: bash
+        run: |
+          mkdir -p /tmp/artbox-smoke
+          touch /tmp/artbox-smoke/test.pdf
+
+          # Create a dummy PPTX with python-pptx
+          CMD="from pptx import Presentation\n"
+          CMD="${CMD}prs = Presentation()\n"
+          CMD="${CMD}slide = prs.slides.add_slide(prs.slide_layouts[0])\n"
+          CMD="${CMD}text_frame = slide.notes_slide.notes_text_frame\n"
+          CMD="${CMD}text_frame.text = 'Smoke test speaker note.'\n"
+          CMD="${CMD}prs.save('/tmp/artbox-smoke/test.pptx')\n"
+
+          echo -e "$CMD" | python
+
+          artbox init --source-pdf /tmp/artbox-smoke/test.pdf --notes-pptx /tmp/artbox-smoke/test.pptx --output /tmp/artbox-smoke/test_init.yaml
+
+          if [ ! -f "/tmp/artbox-smoke/test_init.yaml" ]; then
+            echo "Error: YAML project file not generated"
+            exit 1
+          fi
+
+          grep "Smoke test speaker note" /tmp/artbox-smoke/test_init.yaml > /dev/null
+          if [ $? -ne 0 ]; then
+            echo "Error: Speaker notes not correctly extracted to YAML"
+            exit 1
+          fi
+
+          echo "Init test passed"
