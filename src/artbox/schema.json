@@ -13,6 +13,12 @@
       "type": "string",
       "description": "Default output directory (overridden by CLI --output)."
     },
+    "engine": {
+      "type": "string",
+      "enum": ["moviepy", "ffmpeg"],
+      "default": "moviepy",
+      "description": "Video rendering engine to use."
+    },
     "global": {
       "type": "object",
       "description": "Global settings applied to all slides.",

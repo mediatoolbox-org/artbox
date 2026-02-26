@@ -4,7 +4,7 @@ version = "0.10.0"  # semantic-release
 description = "ArtBox is a tool set for handling multimedia files."
 readme = "docs/index.md"
 license = {text = "BSD-3-Clause"}
-requires-python = ">=3.9,<3.14"
+requires-python = ">=3.10,<3.14"
 authors = [
   {name = "Ivan Ogasawara", email = "ivan.ogasawara@gmail.com"},
 ]
@@ -25,13 +25,14 @@ dependencies = [
   "speechrecognition>=3.10",
   "vosk>=0.3.45",
   "google-cloud-speech>=2.24.1",
-  "ffmpeg-python>=0.2.0",
   "matplotlib<=3.9",
   "scipy<1.23",
   "librosa>=0.10.1",
   "pyyaml>=6.0",
   "jsonschema>=4.0",
   "pdf2image>=1.16",
+  "ffmpeg-python>=0.2.0",
+  "types-tqdm (>=4.67.3.20260205,<5.0.0.0)",
 ]
 
 [project.scripts]
@@ -108,7 +109,7 @@ select = [
   "RUF", # Ruff-specific rules
   "I001", # isort
 ]
-ignore = ["PLR0913"]
+ignore = ["PLR0913", "PLR0915"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"

@@ -11,13 +11,9 @@ from pathlib import Path
 import yaml
 
 from jsonschema import validate
-from moviepy.editor import (
-    AudioFileClip,
-    ImageClip,
-    concatenate_videoclips,
-)
 from PIL import Image
 
+from artbox.engines import BaseVideoEngine, FFmpegEngine, MoviePyEngine
 from artbox.speech import SpeechFromText
 
 # Language name -> edge-tts language code mapping
@@ -306,43 +302,6 @@ class Render:
 
         return None
 
-    def _build_slide_clip(
-        self,
-        image_path: str,
-        audio_path: str | None,
-        pause_after: float,
-    ):
-        """
-        Build a moviepy clip for a single slide.
-
-        Parameters
-        ----------
-        image_path : str
-            Path to the background image.
-        audio_path : str or None
-            Path to the audio file, or None for a silent slide.
-        pause_after : float
-            Seconds of silence to add after the audio.
-
-        Returns
-        -------
-        moviepy.editor.ImageClip
-            The composed clip for this slide.
-        """
-        if audio_path:
-            audio_clip = AudioFileClip(audio_path)
-            duration = audio_clip.duration + pause_after
-        else:
-            audio_clip = None
-            duration = pause_after if pause_after > 0 else 3.0
-
-        img_clip = ImageClip(image_path, duration=duration)
-
-        if audio_clip:
-            img_clip = img_clip.set_audio(audio_clip)
-
-        return img_clip
-
     def render(self, project_path: str, output_dir: str | None = None) -> str:
         """
         Build the final MP4 video from a YAML project configuration.
@@ -373,7 +332,18 @@ class Render:
         source_config = config.get("source", {"type": "image"})
 
         slides = config.get("slides", [])
-        clips = []
+
+        # Determine engine
+        engine_type = config.get("engine", "moviepy")
+        engine: BaseVideoEngine
+
+        project_name = config.get("name", "output")
+        output_path = str(Path(out_dir) / f"{project_name}.mp4")
+
+        if engine_type == "ffmpeg":
+            engine = FFmpegEngine(output_path, fps=24)
+        else:
+            engine = MoviePyEngine(output_path, fps=24)
 
         try:
             for slide in slides:
@@ -397,28 +367,16 @@ class Render:
                     audio_config.get("pause-after", global_pause),
                 )
 
-                # Build the clip
-                clip = self._build_slide_clip(image_path, audio_path, pause)
-                clips.append(clip)
+                # Add slide to engine
+                engine.add_slide(image_path, audio_path, pause)
 
-            if not clips:
-                raise ValueError("No slides to render.")
+            # Render the video using the orchestrated engine
+            engine.render()
 
-            # Concatenate all clips
-            final = concatenate_videoclips(clips, method="compose")
-
-            # Write the final video
-            project_name = config.get("name", "output")
-            output_path = str(Path(out_dir) / f"{project_name}.mp4")
-
-            final.write_videofile(
-                output_path,
-                fps=24,
-                codec="libx264",
-                audio_codec="aac",
+            print(
+                f"Video rendered successfully: {output_path} "
+                f"using {engine_type} engine."
             )
-
-            print(f"Video rendered successfully: {output_path}")
             return output_path
 
         finally:
