@@ -13,11 +13,22 @@
       "type": "string",
       "description": "Default output directory (overridden by CLI --output)."
     },
-    "engine": {
-      "type": "string",
-      "enum": ["moviepy", "ffmpeg"],
-      "default": "moviepy",
-      "description": "Video rendering engine to use."
+    "engines": {
+      "type": "object",
+      "description": "Engines to use for project rendering.",
+      "properties": {
+        "video": {
+          "type": "string",
+          "enum": ["ffmpeg", "moviepy"],
+          "description": "Video rendering engine to use."
+        },
+        "audio": {
+          "type": "string",
+          "enum": ["edge-tts", "gtts", "openai-tts"],
+          "description": "Audio TTS engine to use."
+        }
+      },
+      "additionalProperties": false
     },
     "global": {
       "type": "object",
@@ -30,6 +41,10 @@
             "language": {
               "type": "string",
               "description": "Language for TTS (e.g. 'en', 'spanish', 'pt')."
+            },
+            "model": {
+              "type": "string",
+              "description": "Specific TTS model to use (e.g. 'tts-1', 'gpt-4o-mini-tts')."
             },
             "voice-id": {
               "type": "string",
@@ -119,6 +134,10 @@
               "text": {
                 "type": "string",
                 "description": "Text to convert to speech via TTS."
+              },
+              "model": {
+                "type": "string",
+                "description": "Specific TTS model to use (e.g. 'tts-1', 'gpt-4o-mini-tts')."
               },
               "voice-id": {
                 "type": "string",

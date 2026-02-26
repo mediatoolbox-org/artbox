@@ -89,6 +89,10 @@ class InitProject:
         # Define the scaffold template matching schema
         scaffold: dict[str, Any] = {
             "name": project_name,
+            "engines": {
+                "video": "ffmpeg",
+                "audio": "openai-tts",
+            },
             "global": {
                 "audio": {
                     "language": "en",

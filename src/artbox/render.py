@@ -223,6 +223,7 @@ class Render:
         self,
         slide_config: dict,
         global_audio: dict,
+        global_engines: dict,
         project_dir: str,
     ) -> str | None:
         """
@@ -234,6 +235,8 @@ class Render:
             The slide configuration dictionary.
         global_audio : dict
             The global audio settings from the project config.
+        global_engines : dict
+            The global engine settings from the project config.
         project_dir : str
             Directory of the project YAML (for relative path resolution).
 
@@ -266,6 +269,9 @@ class Render:
             voice_id = audio_config.get(
                 "voice-id", global_audio.get("voice-id")
             )
+            model = audio_config.get(
+                "model", global_audio.get("model", "tts-1")
+            )
 
             # Write text to a temp file for SpeechFromText
             text_file = tempfile.NamedTemporaryFile(
@@ -281,16 +287,19 @@ class Render:
             audio_file.close()
             self._tmp_files.append(audio_file.name)
 
+            tts_engine = global_engines.get("audio", "edge-tts")
+
             args = {
                 "title": "artbox-render",
                 "input-path": text_file.name,
                 "output-path": audio_file.name,
-                "engine": "edge-tts",
+                "engine": tts_engine,
                 "lang": lang,
                 "rate": _float_to_edge_tts_percent(speed),
                 "volume": _float_to_edge_tts_percent(volume),
                 "pitch": _float_to_edge_tts_pitch(pitch),
                 "gender": gender.capitalize(),
+                "model": model,
             }
             if voice_id is not None:
                 args["voice_id"] = voice_id
@@ -328,13 +337,16 @@ class Render:
 
         global_config = config.get("global", {})
         global_audio = global_config.get("audio", {})
+        root_engines = config.get("engines", {})
         global_pause = global_config.get("pause-after", 3.0)
         source_config = config.get("source", {"type": "image"})
 
         slides = config.get("slides", [])
 
-        # Determine engine
-        engine_type = config.get("engine", "moviepy")
+        # Determine engine (favor root engines, falback to root engine keyword)
+        engine_type = root_engines.get(
+            "video", config.get("engine", "moviepy")
+        )
         engine: BaseVideoEngine
 
         project_name = config.get("name", "output")
@@ -357,7 +369,7 @@ class Render:
 
                 # Generate or resolve audio
                 audio_path = self._generate_audio(
-                    slide, global_audio, project_dir
+                    slide, global_audio, root_engines, project_dir
                 )
 
                 # Determine pause-after (slide-level > audio-level > global)

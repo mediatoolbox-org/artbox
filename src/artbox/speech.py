@@ -14,6 +14,7 @@ from typing import Literal, cast
 
 import edge_tts
 import gtts
+import openai
 import speech_recognition as sr
 
 from edge_tts import VoicesManager
@@ -58,6 +59,10 @@ class SpeechFromText(Speech):
             self.engine: SpeechFromTextEngineBase = SpeechEngineGTTS(
                 *args, **kwargs
             )
+        elif engine == "openai-tts":
+            self.engine: SpeechFromTextEngineBase = SpeechEngineOpenAITTS(
+                *args, **kwargs
+            )
         else:
             raise Exception(f"Engine {engine} not found.")
 
@@ -86,6 +91,54 @@ class SpeechEngineGTTS(SpeechFromTextEngineBase):
 
         tts = gtts.gTTS(text, lang=lang, slow=False)
         tts.save(str(self.output_path))
+
+
+class SpeechEngineOpenAITTS(SpeechFromTextEngineBase):
+    """OpenAI Text-To-Speech engine."""
+
+    def convert(self) -> None:
+        """Convert text to audio speech via OpenAI API."""
+        title: str = self.args.get("title", "")
+        input_path: str = self.args.get("input-path", "")
+
+        # Gender mappings for OpenAI voices (approximations)
+        gender: str = str(self.args.get("gender", "male")).lower()
+
+        # Determine the voice
+        voice_id = self.args.get("voice_id")
+        if voice_id:
+            voice = voice_id
+        else:
+            # Default fallbacks based on gender
+            voice = "alloy" if gender == "female" else "onyx"
+
+        # Note: speed is natively supported by OpenAI (0.25 to 4.0)
+        speed = float(self.args.get("speed", 1.0))
+        model = self.args.get("model", "tts-1")
+
+        if not title:
+            raise Exception("Argument `title` not given")
+
+        if not input_path:
+            raise Exception("Argument `input_path` not given")
+
+        with open(input_path, "r", encoding="utf-8") as f:
+            text = f.read()
+
+        # Instantiate standard synchronous client
+        client = openai.OpenAI()
+
+        # Extract audio straight to file
+        response = client.audio.speech.create(
+            model=model,
+            voice=cast(
+                Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
+                voice,
+            ),
+            input=text,
+            speed=speed,
+        )
+        response.stream_to_file(str(self.output_path))
 
 
 class SpeechEngineMSEdgeTTS(SpeechFromTextEngineBase):
