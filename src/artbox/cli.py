@@ -2,6 +2,7 @@
 
 import typer
 
+from dotenv import load_dotenv
 from typing_extensions import Annotated
 
 from artbox import __version__
@@ -63,8 +64,18 @@ def main(
         is_flag=True,
         help="Show the version and exit.",
     ),
+    env_file: Annotated[
+        str,
+        typer.Option(
+            "--env-file",
+            help="Specify a .env file to load environment variables from.",
+        ),
+    ] = "",
 ) -> None:
     """Process commands for specific flags; otherwise, show the help menu."""
+    if env_file:
+        load_dotenv(env_file)
+
     if version:
         typer.echo(f"Version: {__version__}")
         raise typer.Exit()
@@ -95,7 +106,10 @@ def speech_from_text(
         str,
         typer.Option(
             "--engine",
-            help="Choose the text-to-speech engine (Options: edge-tts, gtts)",
+            help=(
+                "Choose the text-to-speech engine (Options: "
+                "edge-tts, gtts, openai-tts)"
+            ),
         ),
     ] = "edge-tts",
     lang: Annotated[
