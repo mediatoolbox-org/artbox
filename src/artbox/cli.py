@@ -5,6 +5,7 @@ import typer
 from typing_extensions import Annotated
 
 from artbox import __version__
+from artbox.init import InitProject
 from artbox.render import Render
 from artbox.sounds import Sound
 from artbox.speech import SpeechFromText, SpeechToText
@@ -424,6 +425,51 @@ def youtube_cc(
 
     runner = Youtube(args_dict)
     runner.download_captions()
+
+
+@app.command("init")
+def init_project(
+    source_pdf: Annotated[
+        str,
+        typer.Option(
+            "--source-pdf",
+            help="Path to the PDF file to extract visual slides from.",
+        ),
+    ] = "",
+    notes_pptx: Annotated[
+        str,
+        typer.Option(
+            "--notes-pptx",
+            help="Path to the PPTX file to extract speaker notes from.",
+        ),
+    ] = "",
+    output: Annotated[
+        str,
+        typer.Option(
+            "--output",
+            help="Output path for the generated project YAML configuration.",
+        ),
+    ] = "",
+) -> None:
+    """Initialize a new Artbox project configuration from presentations."""
+    if not source_pdf:
+        typer.echo("Error: --source-pdf is required.")
+        raise typer.Exit(1)
+
+    if not notes_pptx:
+        typer.echo("Error: --notes-pptx is required.")
+        raise typer.Exit(1)
+
+    if not output:
+        typer.echo("Error: --output is required.")
+        raise typer.Exit(1)
+
+    initializer = InitProject(
+        source_pdf=source_pdf,
+        notes_pptx=notes_pptx,
+        output_path=output,
+    )
+    initializer.generate()
 
 
 @app_render.callback(invoke_without_command=True)
