@@ -10,7 +10,7 @@ import random
 
 from abc import ABC
 from pathlib import Path
-from typing import Literal, cast
+from typing import Any, Literal, cast
 
 import edge_tts
 import gtts
@@ -115,6 +115,12 @@ class SpeechEngineOpenAITTS(SpeechFromTextEngineBase):
         # Note: speed is natively supported by OpenAI (0.25 to 4.0)
         speed = float(self.args.get("speed", 1.0))
         model = self.args.get("model", "tts-1")
+        instruction_path = self.args.get("instruction", "")
+
+        instructions = ""
+        if instruction_path:
+            with open(instruction_path, "r", encoding="utf-8") as f:
+                instructions = f.read()
 
         if not title:
             raise Exception("Argument `title` not given")
@@ -129,16 +135,23 @@ class SpeechEngineOpenAITTS(SpeechFromTextEngineBase):
         client = openai.OpenAI()
 
         # Extract audio straight to file
-        response = client.audio.speech.create(
-            model=model,
-            voice=cast(
+        kwargs = {
+            "model": model,
+            "voice": cast(
                 Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
                 voice,
             ),
-            input=text,
-            speed=speed,
-        )
-        response.stream_to_file(str(self.output_path))
+            "input": text,
+            "speed": speed,
+            "response_format": "mp3",
+        }
+        if instructions:
+            kwargs["instructions"] = instructions
+
+        with client.audio.speech.with_streaming_response.create(
+            **cast(Any, kwargs)
+        ) as response:
+            response.stream_to_file(str(self.output_path))
 
 
 class SpeechEngineMSEdgeTTS(SpeechFromTextEngineBase):

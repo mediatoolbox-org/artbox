@@ -70,25 +70,29 @@ def _make_valid_config() -> dict:
     """Create a minimal valid project configuration."""
     return {
         "name": "test-project",
-        "global": {
-            "audio": {
+        "audio": {
+            "engine": "openai-tts",
+            "defaults": {
                 "language": "english",
                 "gender": "female",
                 "volume": 1.0,
                 "pitch": 1.0,
                 "speed": 1.0,
             },
-            "pause-after": 3,
         },
+        "video": {"engine": "ffmpeg"},
         "source": {"type": "image"},
-        "slides": [
-            {
-                "slide": 1,
-                "background": {"path": "slide1.png"},
-                "audio": {"text": "Hello world"},
-                "pause-after": 2,
-            }
-        ],
+        "slides": {
+            "defaults": {"transitions": {"pause-after": 3}},
+            "items": [
+                {
+                    "slide": 1,
+                    "background": {"path": "slide1.png"},
+                    "audio": {"text": "Hello world"},
+                    "pause-after": 2,
+                }
+            ],
+        },
     }
 
 
@@ -109,7 +113,7 @@ class TestSchemaValidation:
         try:
             result = renderer.load_and_validate(tmp_path)
             assert result["name"] == "test-project"
-            assert len(result["slides"]) == 1
+            assert len(result["slides"]["items"]) == 1
         finally:
             os.unlink(tmp_path)
 
@@ -118,7 +122,7 @@ class TestSchemaValidation:
         renderer = Render()
         config = _make_valid_config()
         config["source"] = {"type": "pdf", "path": "slides.pdf"}
-        config["slides"][0]["background"] = {"page": 1}
+        config["slides"]["items"][0]["background"] = {"page": 1}
 
         with tempfile.NamedTemporaryFile(
             suffix=".yaml", mode="w", delete=False
@@ -190,7 +194,7 @@ class TestSchemaValidation:
         """Test that an invalid gender raises ValidationError."""
         renderer = Render()
         config = _make_valid_config()
-        config["global"]["audio"]["gender"] = "robot"
+        config["audio"]["defaults"]["gender"] = "robot"
 
         with tempfile.NamedTemporaryFile(
             suffix=".yaml", mode="w", delete=False

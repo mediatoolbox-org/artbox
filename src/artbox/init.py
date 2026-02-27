@@ -101,25 +101,33 @@ class InitProject:
         # Define the scaffold template matching schema
         scaffold: dict[str, Any] = {
             "name": project_name,
-            "engines": {
-                "video": "ffmpeg",
-                "audio": "openai-tts",
-            },
-            "global": {
-                "audio": {
+            "audio": {
+                "engine": "openai-tts",
+                "instruction": "",
+                "defaults": {
                     "language": "en",
                     "gender": "male",
+                    "model": "tts-1",
                     "volume": 1.0,
                     "pitch": 1.0,
                     "speed": 1.0,
                 },
-                "pause-after": 3.0,
+            },
+            "video": {
+                "engine": "ffmpeg",
             },
             "source": {
                 "type": "pdf",
                 "path": rel_pdf_path,
             },
-            "slides": [],
+            "slides": {
+                "defaults": {
+                    "transitions": {
+                        "pause-after": 3.0,
+                    },
+                },
+                "items": [],
+            },
         }
 
         # Append each parsed slide
@@ -138,7 +146,7 @@ class InitProject:
                 },
                 "audio": {"text": audio_text},
             }
-            scaffold["slides"].append(slide_config)
+            scaffold["slides"]["items"].append(slide_config)
 
         # Output the generated YAML safely
         with open(self.output_path, "w", encoding="utf-8") as file:
