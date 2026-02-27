@@ -297,7 +297,8 @@ class Render:
             if voice_id is not None:
                 args["voice_id"] = voice_id
             if instruction:
-                args["instruction"] = instruction
+                resolved_inst = Path(project_dir) / instruction
+                args["instruction"] = str(resolved_inst.resolve())
 
             speech = SpeechFromText(args)
             speech.convert()
@@ -327,7 +328,8 @@ class Render:
         project_dir = str(Path(project_path).parent)
 
         # Determine output directory
-        out_dir = output_dir or config.get("output", "/tmp/artbox")
+        config_out = config.get("output", "/tmp/artbox")
+        out_dir = output_dir or str((Path(project_dir) / config_out).resolve())
         os.makedirs(out_dir, exist_ok=True)
 
         audio_config_root = config.get("audio", {})

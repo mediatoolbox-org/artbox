@@ -101,13 +101,19 @@ class InitProject:
         # Define the scaffold template matching schema
         scaffold: dict[str, Any] = {
             "name": project_name,
+            "output": "/tmp/artbox/",
+            "source": {
+                "type": "pdf",
+                "path": rel_pdf_path,
+            },
             "audio": {
                 "engine": "openai-tts",
                 "instruction": "",
                 "defaults": {
-                    "language": "en",
-                    "gender": "male",
                     "model": "tts-1",
+                    "language": "en",
+                    "gender": "female",
+                    "voice-id": "nova",
                     "volume": 1.0,
                     "pitch": 1.0,
                     "speed": 1.0,
@@ -116,14 +122,10 @@ class InitProject:
             "video": {
                 "engine": "ffmpeg",
             },
-            "source": {
-                "type": "pdf",
-                "path": rel_pdf_path,
-            },
             "slides": {
                 "defaults": {
                     "transitions": {
-                        "pause-after": 3.0,
+                        "pause-after": 1.0,
                     },
                 },
                 "items": [],
