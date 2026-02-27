@@ -10,6 +10,18 @@ import yaml
 from pptx import Presentation
 
 
+class FoldedString(str):
+    """Custom string class for folded block YAML formatting."""
+
+
+def folded_string_representer(dumper: yaml.Dumper, data: str) -> yaml.Node:
+    """Represent FoldedString using the '>' style."""
+    return dumper.represent_scalar("tag:yaml.org,2002:str", data, style=">")
+
+
+yaml.add_representer(FoldedString, folded_string_representer)
+
+
 class InitProject:
     """Initialize a new Artbox project from source files."""
 
@@ -112,13 +124,19 @@ class InitProject:
 
         # Append each parsed slide
         for i, text in enumerate(notes, start=1):
+            audio_text: Any
+            if text and len(text.strip()) > 0:
+                audio_text = FoldedString(text.strip())
+            else:
+                audio_text = "Silence."
+
             slide_config: dict[str, Any] = {
                 "slide": i,
                 "background": {
                     # PDF pages are 1-indexed for pdf2images
                     "page": i
                 },
-                "audio": {"text": text if text else "Silence."},
+                "audio": {"text": audio_text},
             }
             scaffold["slides"].append(slide_config)
 
