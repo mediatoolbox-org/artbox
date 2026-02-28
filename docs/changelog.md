@@ -1,6 +1,13 @@
 # Release Notes
 ---
 
+# [0.12.0](https://github.com/mediatoolbox-org/artbox/compare/0.11.0...0.12.0) (2026-02-28)
+
+
+### Features
+
+* Add support for audio instructions ([#38](https://github.com/mediatoolbox-org/artbox/issues/38)) ([8434fb1](https://github.com/mediatoolbox-org/artbox/commit/8434fb183d4281c5f91fea94f6804cd9d4f72f62))
+
 # [0.11.0](https://github.com/mediatoolbox-org/artbox/compare/0.10.0...0.11.0) (2026-02-26)
 
 
