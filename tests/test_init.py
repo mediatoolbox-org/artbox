@@ -51,19 +51,21 @@ def test_init_project(tmp_path: Path) -> None:
     assert config["name"] == "my_project"
     assert config["source"]["type"] == "pdf"
     assert config["source"]["path"] == "presentation.pdf"
+    assert config["video"]["engine"] == "ffmpeg"
+    assert config["audio"]["engine"] == "openai-tts"
 
     # 2. Check Slide Parsing
-    assert len(config["slides"]) == 2
+    assert len(config["slides"]["items"]) == 2
 
     # Slide 1 properties
-    assert config["slides"][0]["slide"] == 1
-    assert config["slides"][0]["background"]["page"] == 1
+    assert config["slides"]["items"][0]["slide"] == 1
+    assert config["slides"]["items"][0]["background"]["page"] == 1
     assert (
-        config["slides"][0]["audio"]["text"]
+        config["slides"]["items"][0]["audio"]["text"]
         == "Hello world, this is slide one speaker notes."
     )
 
     # Slide 2 properties (fallback to Silence)
-    assert config["slides"][1]["slide"] == 2
-    assert config["slides"][1]["background"]["page"] == 2
-    assert config["slides"][1]["audio"]["text"] == "Silence."
+    assert config["slides"]["items"][1]["slide"] == 2
+    assert config["slides"]["items"][1]["background"]["page"] == 2
+    assert config["slides"]["items"][1]["audio"]["text"] == "Silence."

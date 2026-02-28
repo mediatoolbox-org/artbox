@@ -3,7 +3,7 @@
   "title": "Artbox Render Project",
   "description": "Schema for artbox render project YAML configuration.",
   "type": "object",
-  "required": ["name", "global", "source", "slides"],
+  "required": ["name", "source", "slides"],
   "properties": {
     "name": {
       "type": "string",
@@ -13,30 +13,22 @@
       "type": "string",
       "description": "Default output directory (overridden by CLI --output)."
     },
-    "engines": {
+    "audio": {
       "type": "object",
-      "description": "Engines to use for project rendering.",
+      "description": "Global audio settings and engine configuration.",
       "properties": {
-        "video": {
-          "type": "string",
-          "enum": ["ffmpeg", "moviepy"],
-          "description": "Video rendering engine to use."
-        },
-        "audio": {
+        "engine": {
           "type": "string",
           "enum": ["edge-tts", "gtts", "openai-tts"],
           "description": "Audio TTS engine to use."
-        }
-      },
-      "additionalProperties": false
-    },
-    "global": {
-      "type": "object",
-      "description": "Global settings applied to all slides.",
-      "properties": {
-        "audio": {
+        },
+        "instruction": {
+          "type": "string",
+          "description": "Path to a text file containing voice instructions."
+        },
+        "defaults": {
           "type": "object",
-          "description": "Default audio/TTS parameters.",
+          "description": "Default audio settings that can be overridden by individual slides.",
           "properties": {
             "language": {
               "type": "string",
@@ -69,10 +61,18 @@
             }
           },
           "additionalProperties": false
-        },
-        "pause-after": {
-          "type": "number",
-          "description": "Default pause in seconds after each slide."
+        }
+      },
+      "additionalProperties": false
+    },
+    "video": {
+      "type": "object",
+      "description": "Global video settings and engine configuration.",
+      "properties": {
+        "engine": {
+          "type": "string",
+          "enum": ["ffmpeg", "moviepy"],
+          "description": "Video rendering engine to use."
         }
       },
       "additionalProperties": false
@@ -101,78 +101,102 @@
       }
     },
     "slides": {
-      "type": "array",
-      "description": "List of slide definitions.",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "required": ["slide", "background"],
-        "properties": {
-          "slide": {
-            "type": "integer",
-            "description": "Slide number (for ordering and identification)."
-          },
-          "background": {
-            "type": "object",
-            "description": "Background image or PDF page for this slide.",
-            "properties": {
-              "path": {
-                "type": "string",
-                "description": "Path to the background image (for image source type)."
+      "type": "object",
+      "description": "Slides configuration and list.",
+      "properties": {
+        "defaults": {
+          "type": "object",
+          "properties": {
+            "transitions": {
+              "type": "object",
+              "properties": {
+                "pause-after": {
+                  "type": "number",
+                  "description": "Default pause in seconds after each slide."
+                }
               },
-              "page": {
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "items": {
+          "type": "array",
+          "description": "List of slide definitions.",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["slide", "background"],
+            "properties": {
+              "slide": {
                 "type": "integer",
-                "description": "PDF page number to use (for pdf source type)."
-              }
-            },
-            "additionalProperties": false
-          },
-          "audio": {
-            "type": "object",
-            "description": "Audio configuration for this slide.",
-            "properties": {
-              "text": {
-                "type": "string",
-                "description": "Text to convert to speech via TTS."
+                "description": "Slide number (for ordering and identification)."
               },
-              "model": {
-                "type": "string",
-                "description": "Specific TTS model to use (e.g. 'tts-1', 'gpt-4o-mini-tts')."
+              "background": {
+                "type": "object",
+                "description": "Background image or PDF page for this slide.",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "Path to the background image (for image source type)."
+                  },
+                  "page": {
+                    "type": "integer",
+                    "description": "PDF page number to use (for pdf source type)."
+                  }
+                },
+                "additionalProperties": false
               },
-              "voice-id": {
-                "type": "string",
-                "description": "Per-slide edge-tts voice ID override."
-              },
-              "path": {
-                "type": "string",
-                "description": "Path to a pre-recorded audio file."
-              },
-              "volume": {
-                "type": "number",
-                "description": "Per-slide volume override."
-              },
-              "pitch": {
-                "type": "number",
-                "description": "Per-slide pitch override."
-              },
-              "speed": {
-                "type": "number",
-                "description": "Per-slide speed override."
+              "audio": {
+                "type": "object",
+                "description": "Audio configuration for this slide.",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "description": "Text to convert to speech via TTS."
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Specific TTS model to use (e.g. 'tts-1', 'gpt-4o-mini-tts')."
+                  },
+                  "voice-id": {
+                    "type": "string",
+                    "description": "Per-slide edge-tts voice ID override."
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "Path to a pre-recorded audio file."
+                  },
+                  "volume": {
+                    "type": "number",
+                    "description": "Per-slide volume override."
+                  },
+                  "pitch": {
+                    "type": "number",
+                    "description": "Per-slide pitch override."
+                  },
+                  "speed": {
+                    "type": "number",
+                    "description": "Per-slide speed override."
+                  },
+                  "pause-after": {
+                    "type": "number",
+                    "description": "Per-slide pause override (seconds)."
+                  }
+                },
+                "additionalProperties": false
               },
               "pause-after": {
                 "type": "number",
-                "description": "Per-slide pause override (seconds)."
+                "description": "Pause in seconds after this slide (overrides global)."
               }
             },
             "additionalProperties": false
-          },
-          "pause-after": {
-            "type": "number",
-            "description": "Pause in seconds after this slide (overrides global)."
           }
-        },
-        "additionalProperties": false
-      }
+        }
+      },
+      "required": ["items"],
+      "additionalProperties": false
     }
   },
   "additionalProperties": false

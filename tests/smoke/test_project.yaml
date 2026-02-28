@@ -1,18 +1,24 @@
 name: smoke-test
 output: /tmp/artbox-smoke/out
-global:
-  audio:
+audio:
+  engine: edge-tts
+  defaults:
     language: english
     gender: female
     volume: 1.0
     pitch: 1.0
     speed: 1.0
-  pause-after: 1
+video:
+  engine: ffmpeg
 source:
   type: image
 slides:
-  - slide: 1
-    background:
-      path: slide1.png
-    audio:
-      text: "smoke test audio"
+  defaults:
+    transitions:
+      pause-after: 1
+  items:
+    - slide: 1
+      background:
+        path: slide1.png
+      audio:
+        text: "smoke test audio"
