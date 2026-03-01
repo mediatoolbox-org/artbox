@@ -25,6 +25,20 @@ groups:
             echo "Error: Output video not generated"
             exit 1
           fi
+
+          # Verify cache-dir output
+          if [ ! -d "/tmp/artbox-smoke/smoke-cache" ]; then
+            echo "Error: smoke-cache directory not generated"
+            exit 1
+          fi
+
+          # Verify that an intermediary artifact was copied
+          CACHE_FILES=$(ls /tmp/artbox-smoke/smoke-cache | wc -l)
+          if [ "$CACHE_FILES" -eq 0 ]; then
+            echo "Error: no cached artifacts found in cache-dir"
+            exit 1
+          fi
+
           echo "Render test passed"
 
       speech-from-text:

@@ -1,5 +1,6 @@
 name: smoke-test
 output: /tmp/artbox-smoke/out
+cache-dir: smoke-cache
 audio:
   engine: edge-tts
   defaults:

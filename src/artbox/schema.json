@@ -13,6 +13,10 @@
       "type": "string",
       "description": "Default output directory (overridden by CLI --output)."
     },
+    "cache-dir": {
+      "type": "string",
+      "description": "Optional directory to persistently save intermediate assets like mp3 files and cropped backgrounds."
+    },
     "audio": {
       "type": "object",
       "description": "Global audio settings and engine configuration.",

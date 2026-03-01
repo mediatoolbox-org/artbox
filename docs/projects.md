@@ -46,6 +46,7 @@ The YAML relies on three massive foundational pillars: **audio**, **video**, and
 
 ```yaml
 name: my_project
+cache-dir: my-saved-artifacts # (Optional) Directory to save intermediate resources
 source:
   type: pdf
   path: presentation.pdf
@@ -82,6 +83,11 @@ slides:
 
 ### Global Configuration Blocks
 
+- **`cache-dir`** _(Optional)_: Artbox securely orchestrates videos by spinning
+  up localized `/tmp` resources for audio loops and image framing, which are
+  explicitly garbage-collected before returning your output `MP4`. If you
+  declare a `cache-dir`, the intermediate cropped background png files and AI
+  `.mp3` generations will be permanently persisted here instead of deleted!
 - **`video.engine`**: The backend framework building your MP4. It natively
   supports `ffmpeg` (fast, lightweight) or `moviepy` (robust framing).
 - **`audio.engine`**: The backend framework resolving text-to-speech. Supports

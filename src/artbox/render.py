@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import tempfile
 
 from pathlib import Path
@@ -392,8 +393,22 @@ class Render:
             return output_path
 
         finally:
-            # Clean up temp files
+            # Check for cache-dir before wiping assets
+            cache_dir_rel = config.get("cache-dir")
+            if cache_dir_rel:
+                cache_dir_abs = (Path(project_dir) / cache_dir_rel).resolve()
+                os.makedirs(cache_dir_abs, exist_ok=True)
+                print(
+                    "Persisting intermediate artifacts to cache: "
+                    f"{cache_dir_abs}"
+                )
+
             for tmp_file in self._tmp_files:
+                if cache_dir_rel:
+                    try:
+                        shutil.copy(tmp_file, cache_dir_abs)
+                    except OSError:
+                        pass
                 try:
                     os.unlink(tmp_file)
                 except OSError:
