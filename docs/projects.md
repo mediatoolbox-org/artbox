@@ -62,6 +62,7 @@ audio:
   defaults:
     gender: female
     language: en
+    voice-id: en-US-AriaNeural
     pitch: 1.0
     speed: 1.0
     volume: 1.0

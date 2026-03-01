@@ -112,6 +112,7 @@ class InitProject:
                 "defaults": {
                     "language": "en",
                     "gender": "female",
+                    "voice-id": "en-US-AriaNeural",
                     "volume": 1.0,
                     "pitch": 1.0,
                     "speed": 1.0,
