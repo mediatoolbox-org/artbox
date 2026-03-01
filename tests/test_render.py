@@ -225,3 +225,21 @@ class TestSchemaValidation:
                 renderer.load_and_validate(tmp_path)
         finally:
             os.unlink(tmp_path)
+
+    def test_cache_dir_valid(self):
+        """Test that adding a cache-dir property is valid."""
+        renderer = Render()
+        config = _make_valid_config()
+        config["cache-dir"] = "my_cache_test_dir"
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".yaml", mode="w", delete=False
+        ) as f:
+            yaml.dump(config, f)
+            tmp_path = f.name
+
+        try:
+            result = renderer.load_and_validate(tmp_path)
+            assert result["cache-dir"] == "my_cache_test_dir"
+        finally:
+            os.unlink(tmp_path)
