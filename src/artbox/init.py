@@ -107,13 +107,12 @@ class InitProject:
                 "path": rel_pdf_path,
             },
             "audio": {
-                "engine": "openai-tts",
+                "engine": "edge-tts",
                 "instruction": "",
                 "defaults": {
-                    "model": "tts-1",
                     "language": "en",
                     "gender": "female",
-                    "voice-id": "nova",
+                    "voice-id": "en-US-AriaNeural",
                     "volume": 1.0,
                     "pitch": 1.0,
                     "speed": 1.0,

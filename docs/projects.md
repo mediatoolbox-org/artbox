@@ -57,12 +57,12 @@ video:
 
 # Audio Engine Configuration
 audio:
-  engine: openai-tts
+  engine: edge-tts
   instruction: "" # (Optional) Path to a text file with advanced voice prompt instructions
   defaults:
-    gender: male
+    gender: female
     language: en
-    model: tts-1
+    voice-id: en-US-AriaNeural
     pitch: 1.0
     speed: 1.0
     volume: 1.0
@@ -91,12 +91,52 @@ slides:
 - **`video.engine`**: The backend framework building your MP4. It natively
   supports `ffmpeg` (fast, lightweight) or `moviepy` (robust framing).
 - **`audio.engine`**: The backend framework resolving text-to-speech. Supports
-  `edge-tts`, `gtts`, or `openai-tts`.
+  `edge-tts`, `gtts`, or `openai-tts`. Defaults to `edge-tts`.
 - **`audio.instruction`** _(Optional)_: If your selected audio engine supports
   system-prompting (like OpenAI's experimental streaming models), you can point
   this to a text file (e.g., `/tmp/voice-rules.md`). The engine will read the
   file and inject those instructions directly into the TTS generation!
 - **`audio.defaults`**: These are the baseline metrics applied to all slides.
+
+---
+
+### Supported Audio Engines
+
+Artbox seamlessly supports multiple Text-To-Speech (TTS) engines, allowing you
+to optimize for cost, quality, and API access using the `audio.engine` value.
+
+#### 1. `edge-tts` (Default)
+
+Microsoft Edge's native free TTS engine. It does not require any API keys.
+
+- **`voice-id`**: The explicit Edge voice string (e.g. `en-US-AriaNeural`,
+  `en-GB-RyanNeural`).
+- **`language`**: The language spoken (e.g. `english`, `spanish`).
+- **`gender`**: Determines the voice fallback (`male` or `female`) if `voice-id`
+  is not declared.
+- **`pitch` / `speed` / `volume`**: Numeric pacing and audio factors (e.g.,
+  `1.0` is natively neutral).
+
+#### 2. `openai-tts`
+
+OpenAI's state-of-the-art conversational TTS models. Requires `OPENAI_API_KEY`
+exported in your terminal environment.
+
+- **`model`**: The underlying OpenAI algorithm (e.g. `tts-1`,
+  `gpt-4o-mini-tts`).
+- **`voice-id`**: The configured OpenAI voice actor string (e.g. `alloy`,
+  `echo`, `fable`, `onyx`, `nova`, `shimmer`).
+- **`instruction`**: Advanced system-prompting! Used to dynamically govern tone,
+  expression, and timing. _Note: As of now, instructions are strictly only
+  supported when using the `gpt-4o-mini-tts` model!_
+- **`speed`**: Numeric scaling factor from `0.25` to `4.0`.
+
+#### 3. `gtts`
+
+Google Translate's native fallback algorithm. Entirely free but produces very
+direct, mechanical voices.
+
+- **`language`**: Supported `gtts` language tags (e.g., `en`, `es`).
 
 ### The Slides Timeline
 
