@@ -119,6 +119,12 @@ class SpeechEngineOpenAITTS(SpeechFromTextEngineBase):
 
         instructions = ""
         if instruction_path:
+            if "gpt-4o" not in model:
+                raise ValueError(
+                    "Audio instructions are strictly supported by advanced "
+                    "Models (e.g. 'gpt-4o-mini-tts'). "
+                    f"Received incompatible model: '{model}'"
+                )
             with open(instruction_path, "r", encoding="utf-8") as f:
                 instructions = f.read()
 
