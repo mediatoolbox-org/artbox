@@ -57,12 +57,11 @@ video:
 
 # Audio Engine Configuration
 audio:
-  engine: openai-tts
+  engine: edge-tts
   instruction: "" # (Optional) Path to a text file with advanced voice prompt instructions
   defaults:
-    gender: male
+    gender: female
     language: en
-    model: tts-1
     pitch: 1.0
     speed: 1.0
     volume: 1.0

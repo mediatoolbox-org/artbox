@@ -52,7 +52,7 @@ def test_init_project(tmp_path: Path) -> None:
     assert config["source"]["type"] == "pdf"
     assert config["source"]["path"] == "presentation.pdf"
     assert config["video"]["engine"] == "ffmpeg"
-    assert config["audio"]["engine"] == "openai-tts"
+    assert config["audio"]["engine"] == "edge-tts"
 
     # 2. Check Slide Parsing
     assert len(config["slides"]["items"]) == 2
