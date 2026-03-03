@@ -1,4 +1,6 @@
-"""Set of tests for the sounds module."""
+"""
+title: Set of tests for the sounds module.
+"""
 
 import os
 import unittest
@@ -16,7 +18,9 @@ os.makedirs(TMP_PATH, exist_ok=True)
 
 
 def test_notes_to_audio():
-    """Test the extraction of notes from mp3 file."""
+    """
+    title: Test the extraction of notes from mp3 file.
+    """
     mp3_path = TMP_PATH / "set1.mp3"
     notes_path = TEST_DATA_DIR / "notes" / "set1.txt"
 
@@ -31,7 +35,9 @@ def test_notes_to_audio():
 
 @unittest.skip("not fully implemented")
 def test_extract_notes_from_mp3():
-    """Test the extraction of notes from mp3 file."""
+    """
+    title: Test the extraction of notes from mp3 file.
+    """
     filename = "pixabay-science"
     mp3_path = TEST_DATA_DIR / "audio" / f"{filename}.mp3"
     output_notes = TMP_PATH / "notes" / f"{filename}.txt"
@@ -46,7 +52,9 @@ def test_extract_notes_from_mp3():
 
 @unittest.skip("not fully implemented")
 def test_generate_melody():
-    """Test the melody generation from notes."""
+    """
+    title: Test the melody generation from notes.
+    """
     notes_path = TMP_PATH / "notes" / "tok-audio.txt"
     params = {
         "input-path": notes_path,
@@ -59,7 +67,9 @@ def test_generate_melody():
 
 @unittest.skip("not fully implemented")
 def test_convert_to_8bit_audio():
-    """Test the audio conversion to 8bits style."""
+    """
+    title: Test the audio conversion to 8bits style.
+    """
     input_path = TEST_DATA_DIR / "audio" / "pixabay-science.mp3"
     output_path = TMP_PATH / "sounds" / "tok8bits.mp3"
     params = {

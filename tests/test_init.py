@@ -1,4 +1,6 @@
-"""Tests for the artbox init command."""
+"""
+title: Tests for the artbox init command.
+"""
 
 import os
 from pathlib import Path
@@ -10,7 +12,12 @@ from pptx import Presentation
 
 
 def test_init_project(tmp_path: Path) -> None:
-    """Test the generation of a project YAML from a PPTX and PDF."""
+    """
+    title: Test the generation of a project YAML from a PPTX and PDF.
+    parameters:
+      tmp_path:
+        type: Path
+    """
     pdf_path = tmp_path / "presentation.pdf"
     pptx_path = tmp_path / "notes.pptx"
     out_yaml = tmp_path / "my_project.yaml"

@@ -1,4 +1,6 @@
-"""Cli functions to define the arguments and to call Makim."""
+"""
+title: Cli functions to define the arguments and to call Makim.
+"""
 
 import typer
 
@@ -72,7 +74,18 @@ def main(
         ),
     ] = "",
 ) -> None:
-    """Process commands for specific flags; otherwise, show the help menu."""
+    """
+    title: Process commands for specific flags; otherwise, show the help menu.
+    parameters:
+      ctx:
+        type: typer.Context
+      version:
+        type: bool
+      env_file:
+        type: >-
+          Annotated[str, typer.Option('--env-file', help='Specify a .env file
+          to load environment variables from.')]
+    """
     if env_file:
         load_dotenv(env_file)
 
@@ -131,7 +144,42 @@ def speech_from_text(
         typer.Option("--pitch", help="Decrease/Increase the pitch level"),
     ] = "+0Hz",
 ) -> None:
-    """Convert text to speech."""
+    """
+    title: Convert text to speech.
+    parameters:
+      title:
+        type: >-
+          Annotated[str, typer.Option('--title', help='Specify the name of the
+          audio file')]
+      input_path:
+        type: >-
+          Annotated[str, typer.Option('--input-path', help='Specify the path of
+          the text file (txt)')]
+      output_path:
+        type: >-
+          Annotated[str, typer.Option('--output-path', help='Specify the path
+          to store the audio file')]
+      engine:
+        type: >-
+          Annotated[str, typer.Option('--engine', help='Choose the text-to-
+          speech engine (Options: edge-tts, gtts, openai-tts)')]
+      lang:
+        type: >-
+          Annotated[str, typer.Option('--lang', help='Choose the language for
+          audio generation')]
+      rate:
+        type: >-
+          Annotated[str, typer.Option('--rate', help='Decrease/Increase the
+          rate level')]
+      volume:
+        type: >-
+          Annotated[str, typer.Option('--volume', help='Decrease/Increase the
+          volume level')]
+      pitch:
+        type: >-
+          Annotated[str, typer.Option('--pitch', help='Decrease/Increase the
+          pitch level')]
+    """
     args_dict = {
         "title": title,
         "input-path": input_path,
@@ -176,7 +224,26 @@ def speech_to_text(
         ),
     ] = "en",
 ) -> None:
-    """Convert text to speech."""
+    """
+    title: Convert text to speech.
+    parameters:
+      input_path:
+        type: >-
+          Annotated[str, typer.Option('--input-path', help='Specify the path of
+          the audio file (mp3 or wav)')]
+      output_path:
+        type: >-
+          Annotated[str, typer.Option('--output-path', help='Specify the path
+          to store the text file')]
+      engine:
+        type: >-
+          Annotated[str, typer.Option('--engine', help='Choose the text-to-
+          speech engine (Options: google)')]
+      lang:
+        type: >-
+          Annotated[str, typer.Option('--lang', help='Choose the language for
+          audio generation')]
+    """
     args_dict = {
         "input-path": input_path,
         "output-path": output_path,
@@ -207,7 +274,22 @@ def sound_notes_to_audio(
         typer.Option("--duration", help="Specify the duration of the audio"),
     ] = "",
 ) -> None:
-    """Convert notes to audio."""
+    """
+    title: Convert notes to audio.
+    parameters:
+      input_path:
+        type: >-
+          Annotated[str, typer.Option('--input-path', help='Specify the path of
+          the input file')]
+      output_path:
+        type: >-
+          Annotated[str, typer.Option('--output-path', help='Specify the path
+          to store the audio file')]
+      duration:
+        type: >-
+          Annotated[str, typer.Option('--duration', help='Specify the duration
+          of the audio')]
+    """
     args_dict = {
         "input-path": input_path,
         "output-path": output_path,
@@ -233,7 +315,18 @@ def sound_spectrogram(
         ),
     ] = "",
 ) -> None:
-    """Generate a spectrogram from an MP3 file and saves it as an image."""
+    """
+    title: Generate a spectrogram from an MP3 file and saves it as an image.
+    parameters:
+      input_path:
+        type: >-
+          Annotated[str, typer.Option('--input-path', help='Specify the path of
+          the input file')]
+      output_path:
+        type: >-
+          Annotated[str, typer.Option('--output-path', help='Specify the path
+          to store the audio file')]
+    """
     args_dict = {
         "input-path": input_path,
         "output-path": output_path,
@@ -258,7 +351,18 @@ def video_remove_audio(
         ),
     ] = "",
 ) -> None:
-    """Remove audio from video file."""
+    """
+    title: Remove audio from video file.
+    parameters:
+      input_path:
+        type: >-
+          Annotated[str, typer.Option('--input-path', help='Specify the path of
+          the input video file')]
+      output_path:
+        type: >-
+          Annotated[str, typer.Option('--output-path', help='Specify the path
+          to store the video file')]
+    """
     args_dict = {
         "input-path": input_path,
         "output-path": output_path,
@@ -284,7 +388,18 @@ def video_extract_audio(
         ),
     ] = "",
 ) -> None:
-    """Extract audio from video file."""
+    """
+    title: Extract audio from video file.
+    parameters:
+      input_path:
+        type: >-
+          Annotated[str, typer.Option('--input-path', help='Specify the path of
+          the input video file')]
+      output_path:
+        type: >-
+          Annotated[str, typer.Option('--output-path', help='Specify the path
+          to store the extracted audio file')]
+    """
     args_dict = {
         "input-path": input_path,
         "output-path": output_path,
@@ -310,7 +425,18 @@ def video_get_metadata(
         ),
     ] = "",
 ) -> None:
-    """Get the metadata from a video (mp4)."""
+    """
+    title: Get the metadata from a video (mp4).
+    parameters:
+      input_path:
+        type: >-
+          Annotated[str, typer.Option('--input-path', help='Specify the path of
+          the input video file')]
+      output_path:
+        type: >-
+          Annotated[str, typer.Option('--output-path', help='Specify the path
+          to store the extracted audio file')]
+    """
     args_dict = {
         "input-path": input_path,
         "output-path": output_path,
@@ -342,7 +468,22 @@ def video_combine_audio_and_video(
         ),
     ] = "",
 ) -> None:
-    """Combine audio and video files."""
+    """
+    title: Combine audio and video files.
+    parameters:
+      video_path:
+        type: >-
+          Annotated[str, typer.Option('--video-path', help='Specify the path of
+          the video file')]
+      audio_path:
+        type: >-
+          Annotated[str, typer.Option('--audio-path', help='Specify the path of
+          the audio file')]
+      output_path:
+        type: >-
+          Annotated[str, typer.Option('--output-path', help='Specify the path
+          to store the combined video file')]
+    """
     args_dict = {
         "video-path": video_path,
         "audio-path": audio_path,
@@ -382,7 +523,26 @@ def youtube_download(
         ),
     ] = False,
 ) -> None:
-    """Download youtube video."""
+    """
+    title: Download youtube video.
+    parameters:
+      url:
+        type: >-
+          Annotated[str, typer.Option('--url', help='Specify the URL of the
+          YouTube video to download')]
+      output_path:
+        type: >-
+          Annotated[str, typer.Option('--output-path', help='Specify the path
+          to store the downloaded video file')]
+      resolution:
+        type: >-
+          Annotated[str, typer.Option('--resolution', help='Set the quality of
+          the downloaded video')]
+      use_oauth:
+        type: >-
+          Annotated[bool, typer.Option('--use-oauth', help='Use OAuth
+          authentication to bypass bot detection')]
+    """
     args_dict = {
         "url": url,
         "output-path": output_path,
@@ -428,7 +588,30 @@ def youtube_cc(
         ),
     ] = False,
 ) -> None:
-    """Download youtube video CC."""
+    """
+    title: Download youtube video CC.
+    parameters:
+      url:
+        type: >-
+          Annotated[str, typer.Option('--url', help='Specify the URL of the
+          YouTube video to download')]
+      output_path:
+        type: >-
+          Annotated[str, typer.Option('--output-path', help='Specify the path
+          to store the downloaded video file (.srt, .txt)')]
+      lang:
+        type: >-
+          Annotated[str, typer.Option('--lang', help='Set the CC language to be
+          downloaded')]
+      format:
+        type: >-
+          Annotated[str, typer.Option('--format', help='Set the CC format (srt,
+          text)')]
+      use_oauth:
+        type: >-
+          Annotated[bool, typer.Option('--use-oauth', help='Use OAuth
+          authentication to bypass bot detection')]
+    """
     args_dict = {
         "url": url,
         "output-path": output_path,
@@ -465,7 +648,22 @@ def init_project(
         ),
     ] = "",
 ) -> None:
-    """Initialize a new Artbox project configuration from presentations."""
+    """
+    title: Initialize a new Artbox project configuration from presentations.
+    parameters:
+      source_pdf:
+        type: >-
+          Annotated[str, typer.Option('--source-pdf', help='Path to the PDF
+          file to extract visual slides from.')]
+      notes_pptx:
+        type: >-
+          Annotated[str, typer.Option('--notes-pptx', help='Path to the PPTX
+          file to extract speaker notes from.')]
+      output:
+        type: >-
+          Annotated[str, typer.Option('--output', help='Output path for the
+          generated project YAML configuration.')]
+    """
     if not source_pdf:
         typer.echo("Error: --source-pdf is required.")
         raise typer.Exit(1)
@@ -503,7 +701,18 @@ def render_project(
         ),
     ] = "",
 ) -> None:
-    """Render a video from a YAML project configuration."""
+    """
+    title: Render a video from a YAML project configuration.
+    parameters:
+      project:
+        type: >-
+          Annotated[str, typer.Option('--project', help='Path to the YAML
+          project configuration file.')]
+      output:
+        type: >-
+          Annotated[str, typer.Option('--output', help='Output directory for
+          the rendered video.')]
+    """
     if not project:
         typer.echo("Error: --project is required.")
         raise typer.Exit(1)

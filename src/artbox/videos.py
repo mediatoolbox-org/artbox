@@ -1,7 +1,6 @@
 """
-Set of tools for video handling.
-
-ref: https://github.com/ethand91/python-youtube/blob/master/main.py
+title: Set of tools for video handling.
+notes: 'ref: https://github.com/ethand91/python-youtube/blob/master/main.py'
 """
 
 from abc import abstractmethod
@@ -15,25 +14,27 @@ from artbox.base import ArtBox
 
 
 class DownloadBase(ArtBox):
-    """Set of tools for handing videos."""
+    """
+    title: Set of tools for handing videos.
+    """
 
     @abstractmethod
     def download(self):
-        """Download a video."""
+        """
+        title: Download a video.
+        """
         ...
 
 
 def _convert_srt_to_plain_text(srt_text: str) -> str:
     """
-    Convert an SRT file to plain text by removing timestamps and formatting.
-
-    Parameters
-    ----------
-    srt_file_path (str): Path to the SRT file.
-
-    Returns
-    -------
-    str: The extracted plain text from the SRT file.
+    title: >-
+      Convert an SRT file to plain text by removing timestamps and formatting
+    parameters:
+      srt_text:
+        type: str
+    returns:
+      type: str
     """
     plain_text = []
     # Skip lines that are part of SRT formatting (timestamps, etc.)
@@ -45,10 +46,19 @@ def _convert_srt_to_plain_text(srt_text: str) -> str:
 
 
 class Youtube(DownloadBase):
-    """Set of tools for handing videos."""
+    """
+    title: Set of tools for handing videos.
+    """
 
     def _create_youtube(self, video_url: str) -> PyYouTube:
-        """Create a PyYouTube instance with appropriate auth settings."""
+        """
+        title: Create a PyYouTube instance with appropriate auth settings.
+        parameters:
+          video_url:
+            type: str
+        returns:
+          type: PyYouTube
+        """
         use_oauth = self.args.get("use_oauth", "False") == "True"
         if use_oauth:
             return PyYouTube(
@@ -59,7 +69,9 @@ class Youtube(DownloadBase):
         return PyYouTube(video_url, "WEB")
 
     def download(self):
-        """Download a youtube video."""
+        """
+        title: Download a youtube video.
+        """
         resolution = self.args.get("resolution", "")
         video_url = self.args.get("url", "")
 
@@ -88,7 +100,9 @@ class Youtube(DownloadBase):
             print(f"Failed to download video: {e}")
 
     def download_captions(self):
-        """Download the English closed captions of a YouTube video."""
+        """
+        title: Download the English closed captions of a YouTube video.
+        """
         video_url = self.args.get("url", "")
         lang = self.args.get("lang", "en")
         format = self.args.get("format", "text")
@@ -110,15 +124,17 @@ class Youtube(DownloadBase):
 
 
 class Video(ArtBox):
-    """Set of tools for handing videos."""
+    """
+    title: Set of tools for handing videos.
+    """
 
     def combine_video_and_audio(self) -> None:
         """
-        Combine video and audio files to create a new MP4 file.
-
-        The result will be clipped to the time of the shorter input
-        (video or audio), and the audio will fade out smoothly over the last
-        5 seconds.
+        title: Combine video and audio files to create a new MP4 file.
+        notes: |-
+          The result will be clipped to the time of the shorter input
+          (video or audio), and the audio will fade out smoothly over the last
+          5 seconds.
         """
         video_path = self.args.get("video-path", "")
         audio_path = self.args.get("audio-path", "")
@@ -159,7 +175,9 @@ class Video(ArtBox):
         final_clip.close()
 
     def extract_audio(self) -> None:
-        """Extract audio from an MP4 file."""
+        """
+        title: Extract audio from an MP4 file.
+        """
         video_path = str(self.input_path)
         output_path = str(self.output_path)
 
@@ -173,11 +191,7 @@ class Video(ArtBox):
 
     def get_metadata(self) -> None:
         """
-        Extract metadata from an MP4 file using moviepy.
-
-        Returns
-        -------
-        Metadata of the MP4 file.
+        title: Extract metadata from an MP4 file using moviepy
         """
         file_path = str(self.input_path)
 
@@ -226,7 +240,9 @@ class Video(ArtBox):
         print(detailed_metadata)
 
     def remove_audio(self) -> None:
-        """Remove the audio from an MP4 file."""
+        """
+        title: Remove the audio from an MP4 file.
+        """
         # Load the video
         video = VideoFileClip(str(self.input_path))
 

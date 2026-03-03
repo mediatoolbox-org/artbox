@@ -1,4 +1,6 @@
-"""Set of tests for the voices module."""
+"""
+title: Set of tests for the voices module.
+"""
 
 import os
 
@@ -15,8 +17,13 @@ os.makedirs(TMP_PATH, exist_ok=True)
 
 
 @pytest.mark.parametrize("engine", ["gtts", "edge-tts"])
-def test_convert_from_text(engine) -> None:
-    """Test the conversion from text to audio."""
+def test_convert_from_text(engine: str) -> None:
+    """
+    title: Test the conversion from text to audio.
+    parameters:
+      engine:
+        type: str
+    """
     input_path = TMP_PATH / f"totk-{engine}.txt"
     params = {
         "title": "totk",
@@ -50,8 +57,13 @@ def test_convert_from_text(engine) -> None:
         # "whisper-api",
     ],
 )
-def test_convert_speech_to_text(engine) -> None:
-    """Test the conversion from text to audio."""
+def test_convert_speech_to_text(engine: str) -> None:
+    """
+    title: Test the conversion from text to audio.
+    parameters:
+      engine:
+        type: str
+    """
     mp3_path = TEST_DATA_DIR / "audios" / "speech.mp3"
     output_path = TMP_PATH / f"speech-{engine}.txt"
 

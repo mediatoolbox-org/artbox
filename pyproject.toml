@@ -75,6 +75,7 @@ mkdocstrings = {version=">=0.19.0", extras=["python"]}
 mkdocstrings-python = "<2"
 jupyterlab = ">=4.0.5"
 makim = "1.13.0"
+douki = "^0.9.1"
 
 [tool.pytest.ini_options]
 testpaths = [
@@ -104,16 +105,12 @@ fix = true
 select = [
   "E",   # pycodestyle
   "F",   # pyflakes
-  "D",   # pydocstyle
   "YTT", # flake8-2020
   "PL",  # PL
   "RUF", # Ruff-specific rules
   "I001", # isort
 ]
 ignore = ["PLR0913", "PLR0915"]
-
-[tool.ruff.lint.pydocstyle]
-convention = "numpy"
 
 [tool.ruff.lint.isort]
 # Use a single line between direct and from import

@@ -1,7 +1,6 @@
 """
-Utilities for handling audio voices.
-
-ref: https://thepythoncode.com/article/convert-text-to-speech-in-python
+title: Utilities for handling audio voices.
+notes: https://thepythoncode.com/article/convert-text-to-speech-in-python
 """
 
 import asyncio
@@ -24,30 +23,52 @@ from artbox.base import ArtBox
 
 
 def convert_mp3_to_wav(input_path: str, output_path: str) -> None:
-    """Convert from mp3 to wav."""
+    """
+    title: Convert from mp3 to wav.
+    parameters:
+      input_path:
+        type: str
+      output_path:
+        type: str
+    """
     sound = AudioSegment.from_mp3(input_path)
     sound.export(output_path, format="wav")
 
 
 class Speech(ArtBox, ABC):
-    """Set of methods for handing audio voices."""
+    """
+    title: Set of methods for handing audio voices.
+    """
 
 
 class SpeechFromTextEngineBase(Speech):
-    """Set of methods for handing audio voices."""
+    """
+    title: Set of methods for handing audio voices.
+    """
 
     def convert(self) -> None:
-        """Convert text to audio speech."""
+        """
+        title: Convert text to audio speech.
+        """
         ...
 
 
 class SpeechFromText(Speech):
-    """Speech class will run commands according to the selected engine."""
+    """
+    title: Speech class will run commands according to the selected engine.
+    """
 
     engine: SpeechFromTextEngineBase
 
-    def __init__(self, *args, **kwargs) -> None:
-        """Initialize Speech class."""
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """
+        title: Initialize Speech class.
+        parameters:
+          '*args':
+            type: Any
+          '**kwargs':
+            type: Any
+        """
         super().__init__(*args, **kwargs)
         engine = self.args.get("engine", "edge-tts")
 
@@ -67,15 +88,21 @@ class SpeechFromText(Speech):
             raise Exception(f"Engine {engine} not found.")
 
     def convert(self) -> None:
-        """Convert text to audio speech."""
+        """
+        title: Convert text to audio speech.
+        """
         return self.engine.convert()
 
 
 class SpeechEngineGTTS(SpeechFromTextEngineBase):
-    """Google-Text-To-Speech engine."""
+    """
+    title: Google-Text-To-Speech engine.
+    """
 
     def convert(self) -> None:
-        """Convert text to audio speech."""
+        """
+        title: Convert text to audio speech.
+        """
         title: str = self.args.get("title", "")
         input_path: str = self.args.get("input-path", "")
         lang: str = self.args.get("lang", "en")
@@ -94,10 +121,14 @@ class SpeechEngineGTTS(SpeechFromTextEngineBase):
 
 
 class SpeechEngineOpenAITTS(SpeechFromTextEngineBase):
-    """OpenAI Text-To-Speech engine."""
+    """
+    title: OpenAI Text-To-Speech engine.
+    """
 
     def convert(self) -> None:
-        """Convert text to audio speech via OpenAI API."""
+        """
+        title: Convert text to audio speech via OpenAI API.
+        """
         title: str = self.args.get("title", "")
         input_path: str = self.args.get("input-path", "")
 
@@ -161,10 +192,14 @@ class SpeechEngineOpenAITTS(SpeechFromTextEngineBase):
 
 
 class SpeechEngineMSEdgeTTS(SpeechFromTextEngineBase):
-    """Microsoft Edge Text-To-Speech engine."""
+    """
+    title: Microsoft Edge Text-To-Speech engine.
+    """
 
     async def async_convert(self) -> None:
-        """Convert text to audio speech in async mode."""
+        """
+        title: Convert text to audio speech in async mode.
+        """
         title: str = self.args.get("title", "")
         input_path: str = self.args.get("input-path", "")
         lang: str = self.args.get("lang", "en")
@@ -209,15 +244,21 @@ class SpeechEngineMSEdgeTTS(SpeechFromTextEngineBase):
                     print(f"WordBoundary: {chunk}")
 
     def convert(self) -> None:
-        """Convert text to audio speech."""
+        """
+        title: Convert text to audio speech.
+        """
         asyncio.run(self.async_convert())
 
 
 class SpeechToText(Speech):
-    """Speech to Text class."""
+    """
+    title: Speech to Text class.
+    """
 
     def convert(self) -> None:
-        """Recognize speech from MP# using various engines options."""
+        """
+        title: Recognize speech from MP# using various engines options.
+        """
         file_path: str = str(self.input_path)
 
         if file_path.endswith("mp3"):
@@ -233,7 +274,9 @@ class SpeechToText(Speech):
         )
 
     def convert_from_mp3(self) -> None:
-        """Recognize speech from MP# using various engines options."""
+        """
+        title: Recognize speech from MP# using various engines options.
+        """
         file_path: Path = self.input_path
 
         # Convert MP3 to WAV
@@ -247,7 +290,9 @@ class SpeechToText(Speech):
         os.remove(wav_path)
 
     def convert_from_wav(self) -> None:
-        """Recognize speech from WAVE using various engines options."""
+        """
+        title: Recognize speech from WAVE using various engines options.
+        """
         wav_path: str = str(self.input_path)
         output_path: str = str(self.output_path)
         language: str = self.args.get("lang", "en-US")

@@ -1,4 +1,6 @@
-"""Base classes for ArtBox."""
+"""
+title: Base classes for ArtBox.
+"""
 
 from __future__ import annotations
 
@@ -7,10 +9,17 @@ from pathlib import Path
 
 
 class ArtBox(ABC):
-    """The base class for all ArtBox classes."""
+    """
+    title: The base class for all ArtBox classes.
+    """
 
     def __init__(self, args: dict[str, str]) -> None:
-        """Initialize ArtBox class."""
+        """
+        title: Initialize ArtBox class.
+        parameters:
+          args:
+            type: dict[str, str]
+        """
         self.args: dict[str, str] = args
         self.input_path = Path(self.args.get("input-path", "/tmp"))
         self.output_path = Path(self.args.get("output-path", "/tmp"))
