@@ -64,10 +64,12 @@ class SpeechFromText(Speech):
         """
         title: Initialize Speech class.
         parameters:
-          '*args':
+          args:
             type: Any
-          '**kwargs':
+            variadic: positional
+          kwargs:
             type: Any
+            variadic: keyword
         """
         super().__init__(*args, **kwargs)
         engine = self.args.get("engine", "edge-tts")
