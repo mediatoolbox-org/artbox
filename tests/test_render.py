@@ -1,4 +1,6 @@
-"""Tests for the render module."""
+"""
+title: Tests for the render module.
+"""
 
 import os
 import tempfile
@@ -26,39 +28,57 @@ os.makedirs(TMP_PATH, exist_ok=True)
 
 
 class TestHelperFunctions:
-    """Tests for converter and resolver helper functions."""
+    """
+    title: Tests for converter and resolver helper functions.
+    """
 
     def test_float_to_percent_neutral(self):
-        """Test neutral volume/speed conversion."""
+        """
+        title: Test neutral volume/speed conversion.
+        """
         assert _float_to_edge_tts_percent(1.0) == "+0%"
 
     def test_float_to_percent_decrease(self):
-        """Test decreased volume/speed conversion."""
+        """
+        title: Test decreased volume/speed conversion.
+        """
         assert _float_to_edge_tts_percent(0.8) == "-20%"
 
     def test_float_to_percent_increase(self):
-        """Test increased volume/speed conversion."""
+        """
+        title: Test increased volume/speed conversion.
+        """
         assert _float_to_edge_tts_percent(1.1) == "+10%"
 
     def test_float_to_pitch_neutral(self):
-        """Test neutral pitch conversion."""
+        """
+        title: Test neutral pitch conversion.
+        """
         assert _float_to_edge_tts_pitch(1.0) == "+0Hz"
 
     def test_float_to_pitch_increase(self):
-        """Test increased pitch conversion."""
+        """
+        title: Test increased pitch conversion.
+        """
         assert _float_to_edge_tts_pitch(1.2) == "+40Hz"
 
     def test_float_to_pitch_decrease(self):
-        """Test decreased pitch conversion."""
+        """
+        title: Test decreased pitch conversion.
+        """
         assert _float_to_edge_tts_pitch(0.9) == "-20Hz"
 
     def test_resolve_language_named(self):
-        """Test language name resolution."""
+        """
+        title: Test language name resolution.
+        """
         assert _resolve_language("spanish") == "es"
         assert _resolve_language("English") == "en"
 
     def test_resolve_language_code(self):
-        """Test language code passthrough."""
+        """
+        title: Test language code passthrough.
+        """
         assert _resolve_language("pt") == "pt"
         assert _resolve_language("en-US") == "en-US"
 
@@ -67,7 +87,11 @@ class TestHelperFunctions:
 
 
 def _make_valid_config() -> dict:
-    """Create a minimal valid project configuration."""
+    """
+    title: Create a minimal valid project configuration.
+    returns:
+      type: dict
+    """
     return {
         "name": "test-project",
         "audio": {
@@ -97,10 +121,14 @@ def _make_valid_config() -> dict:
 
 
 class TestSchemaValidation:
-    """Tests for YAML schema validation."""
+    """
+    title: Tests for YAML schema validation.
+    """
 
     def test_valid_config(self):
-        """Test that a valid configuration passes validation."""
+        """
+        title: Test that a valid configuration passes validation.
+        """
         renderer = Render()
         config = _make_valid_config()
 
@@ -118,7 +146,9 @@ class TestSchemaValidation:
             os.unlink(tmp_path)
 
     def test_valid_pdf_config(self):
-        """Test that a valid PDF configuration passes validation."""
+        """
+        title: Test that a valid PDF configuration passes validation.
+        """
         renderer = Render()
         config = _make_valid_config()
         config["source"] = {"type": "pdf", "path": "slides.pdf"}
@@ -137,7 +167,9 @@ class TestSchemaValidation:
             os.unlink(tmp_path)
 
     def test_missing_name_raises(self):
-        """Test that missing 'name' field raises ValidationError."""
+        """
+        title: Test that missing 'name' field raises ValidationError.
+        """
         renderer = Render()
         config = _make_valid_config()
         del config["name"]
@@ -155,7 +187,9 @@ class TestSchemaValidation:
             os.unlink(tmp_path)
 
     def test_missing_slides_raises(self):
-        """Test that missing 'slides' field raises ValidationError."""
+        """
+        title: Test that missing 'slides' field raises ValidationError.
+        """
         renderer = Render()
         config = _make_valid_config()
         del config["slides"]
@@ -173,7 +207,9 @@ class TestSchemaValidation:
             os.unlink(tmp_path)
 
     def test_invalid_source_type_raises(self):
-        """Test that an invalid source type raises ValidationError."""
+        """
+        title: Test that an invalid source type raises ValidationError.
+        """
         renderer = Render()
         config = _make_valid_config()
         config["source"]["type"] = "docx"
@@ -191,7 +227,9 @@ class TestSchemaValidation:
             os.unlink(tmp_path)
 
     def test_invalid_gender_raises(self):
-        """Test that an invalid gender raises ValidationError."""
+        """
+        title: Test that an invalid gender raises ValidationError.
+        """
         renderer = Render()
         config = _make_valid_config()
         config["audio"]["defaults"]["gender"] = "robot"
@@ -209,7 +247,9 @@ class TestSchemaValidation:
             os.unlink(tmp_path)
 
     def test_extra_field_raises(self):
-        """Test that extra fields raise ValidationError."""
+        """
+        title: Test that extra fields raise ValidationError.
+        """
         renderer = Render()
         config = _make_valid_config()
         config["unexpected_field"] = "bad"
@@ -227,7 +267,9 @@ class TestSchemaValidation:
             os.unlink(tmp_path)
 
     def test_cache_dir_valid(self):
-        """Test that adding a cache-dir property is valid."""
+        """
+        title: Test that adding a cache-dir property is valid.
+        """
         renderer = Render()
         config = _make_valid_config()
         config["cache-dir"] = "my_cache_test_dir"

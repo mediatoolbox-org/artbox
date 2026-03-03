@@ -1,4 +1,6 @@
-"""Render module for building videos from YAML project configurations."""
+"""
+title: Render module for building videos from YAML project configurations.
+"""
 
 from __future__ import annotations
 
@@ -45,24 +47,26 @@ SCHEMA_PATH = Path(__file__).parent / "schema.json"
 
 
 def _load_schema() -> dict:
-    """Load the JSON schema for project validation."""
+    """
+    title: Load the JSON schema for project validation.
+    returns:
+      type: dict
+    """
     with open(SCHEMA_PATH, "r") as f:
         return json.load(f)
 
 
 def _float_to_edge_tts_percent(value: float) -> str:
     """
-    Convert a float multiplier to an edge-tts percentage string.
-
-    Parameters
-    ----------
-    value : float
-        Multiplier where 1.0 is neutral (e.g., 0.8 = -20%, 1.1 = +10%).
-
-    Returns
-    -------
-    str
-        Formatted string like ``"+10%"`` or ``"-20%"``.
+    title: Convert a float multiplier to an edge-tts percentage string
+    parameters:
+      value:
+        type: float
+        description: >-
+          Multiplier where 1.0 is neutral (e.g., 0.8 = -20%, 1.1 = +10%).
+    returns:
+      type: str
+      description: Formatted string like ``"+10%"`` or ``"-20%"``.
     """
     pct = round((value - 1.0) * 100)
     sign = "+" if pct >= 0 else ""
@@ -71,17 +75,14 @@ def _float_to_edge_tts_percent(value: float) -> str:
 
 def _float_to_edge_tts_pitch(value: float) -> str:
     """
-    Convert a float pitch multiplier to an edge-tts Hz offset string.
-
-    Parameters
-    ----------
-    value : float
-        Multiplier where 1.0 is neutral.
-
-    Returns
-    -------
-    str
-        Formatted string like ``"+40Hz"`` or ``"-10Hz"``.
+    title: Convert a float pitch multiplier to an edge-tts Hz offset string
+    parameters:
+      value:
+        type: float
+        description: Multiplier where 1.0 is neutral.
+    returns:
+      type: str
+      description: Formatted string like ``"+40Hz"`` or ``"-10Hz"``.
     """
     hz = round((value - 1.0) * 200)
     sign = "+" if hz >= 0 else ""
@@ -90,48 +91,45 @@ def _float_to_edge_tts_pitch(value: float) -> str:
 
 def _resolve_language(lang_str: str) -> str:
     """
-    Resolve a language name or code to an edge-tts language code.
-
-    Parameters
-    ----------
-    lang_str : str
-        Language name (e.g. ``"spanish"``) or code (e.g. ``"es"``).
-
-    Returns
-    -------
-    str
-        A short language code suitable for edge-tts.
+    title: Resolve a language name or code to an edge-tts language code
+    parameters:
+      lang_str:
+        type: str
+        description: >-
+          Language name (e.g. ``"spanish"``) or code (e.g. ``"es"``).
+    returns:
+      type: str
+      description: A short language code suitable for edge-tts.
     """
     lower = lang_str.lower()
     return LANGUAGE_MAP.get(lower, lang_str)
 
 
 class Render:
-    """Orchestrate building a video from a YAML project configuration."""
+    """
+    title: Orchestrate building a video from a YAML project configuration.
+    """
 
     def __init__(self) -> None:
-        """Initialize the Render instance."""
+        """
+        title: Initialize the Render instance.
+        """
         self._schema = _load_schema()
         self._tmp_files: list[str] = []
 
     def load_and_validate(self, project_path: str) -> dict:
         """
-        Load a YAML project file and validate it against the schema.
-
-        Parameters
-        ----------
-        project_path : str
-            Path to the YAML project file.
-
-        Returns
-        -------
-        dict
-            The parsed and validated project configuration.
-
-        Raises
-        ------
-        jsonschema.ValidationError
-            If the YAML does not conform to the schema.
+        title: Load a YAML project file and validate it against the schema
+        parameters:
+          project_path:
+            type: str
+            description: Path to the YAML project file.
+        returns:
+          type: dict
+          description: The parsed and validated project configuration.
+        raises:
+          - type: jsonschema.ValidationError
+            description: If the YAML does not conform to the schema.
         """
         with open(project_path, "r") as f:
             config = yaml.safe_load(f)
@@ -146,20 +144,22 @@ class Render:
         project_dir: str,
     ) -> str:
         """
-        Resolve the background image path for a slide; ensure even dimensions.
-
-        Parameters
-        ----------
-        slide_config : dict
-            The slide configuration dictionary.
-        source_config : dict
-            The project-level source configuration.
-        project_dir : str
-            Directory of the project YAML (for relative path resolution).
-
-        Returns
-        -------
-        str
+        title: >-
+          Resolve the background image path for a slide; ensure even dimensions
+        parameters:
+          slide_config:
+            type: dict
+            description: The slide configuration dictionary.
+          source_config:
+            type: dict
+            description: The project-level source configuration.
+          project_dir:
+            type: str
+            description: >-
+              Directory of the project YAML (for relative path resolution).
+        returns:
+          type: str
+          description: >-
             Absolute path to the background image file with even dimensions.
         """
         bg = slide_config.get("background", {})
@@ -227,20 +227,21 @@ class Render:
         project_dir: str,
     ) -> str | None:
         """
-        Generate or resolve the audio file for a slide.
-
-        Parameters
-        ----------
-        slide_config : dict
-            The slide configuration dictionary.
-        audio_config_root : dict
-            The root audio settings block from the project config.
-        project_dir : str
-            Directory of the project YAML (for relative path resolution).
-
-        Returns
-        -------
-        str or None
+        title: Generate or resolve the audio file for a slide
+        parameters:
+          slide_config:
+            type: dict
+            description: The slide configuration dictionary.
+          audio_config_root:
+            type: dict
+            description: The root audio settings block from the project config.
+          project_dir:
+            type: str
+            description: >-
+              Directory of the project YAML (for relative path resolution).
+        returns:
+          type: str | None
+          description: >-
             Path to the audio file, or None if no audio is configured.
         """
         audio_config = slide_config.get("audio")
@@ -310,20 +311,19 @@ class Render:
 
     def render(self, project_path: str, output_dir: str | None = None) -> str:
         """
-        Build the final MP4 video from a YAML project configuration.
-
-        Parameters
-        ----------
-        project_path : str
-            Path to the YAML project file.
-        output_dir : str or None
-            Output directory for the video. If None, uses the ``output``
-            field from the YAML config.
-
-        Returns
-        -------
-        str
-            Path to the generated MP4 file.
+        title: Build the final MP4 video from a YAML project configuration
+        parameters:
+          project_path:
+            type: str
+            description: Path to the YAML project file.
+          output_dir:
+            type: str | None
+            description: >-
+              Output directory for the video. If None, uses the ``output``
+              field from the YAML config.
+        returns:
+          type: str
+          description: Path to the generated MP4 file.
         """
         config = self.load_and_validate(project_path)
         project_dir = str(Path(project_path).parent)

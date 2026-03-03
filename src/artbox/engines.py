@@ -1,4 +1,6 @@
-"""Video rendering engines for artbox render."""
+"""
+title: Video rendering engines for artbox render.
+"""
 
 from __future__ import annotations
 
@@ -20,18 +22,20 @@ from tqdm import tqdm
 
 
 class BaseVideoEngine(ABC):
-    """Abstract base class for video rendering engines."""
+    """
+    title: Abstract base class for video rendering engines.
+    """
 
     def __init__(self, output_path: str, fps: int = 24) -> None:
         """
-        Initialize the engine.
-
-        Parameters
-        ----------
-        output_path : str
-            Full path to the final MP4 output.
-        fps : int
-            Frames per second for the output video.
+        title: Initialize the engine
+        parameters:
+          output_path:
+            type: str
+            description: Full path to the final MP4 output.
+          fps:
+            type: int
+            description: Frames per second for the output video.
         """
         self.output_path = output_path
         self.fps = fps
@@ -44,27 +48,32 @@ class BaseVideoEngine(ABC):
         pause_after: float,
     ) -> None:
         """
-        Add a slide to the rendering queue.
-
-        Parameters
-        ----------
-        image_path : str
-            Path to the background image (with even dimensions).
-        audio_path : str | None
-            Path to the audio file, or None if silent.
-        pause_after : float
-            Seconds of silence to append after the audio ends.
+        title: Add a slide to the rendering queue
+        parameters:
+          image_path:
+            type: str
+            description: Path to the background image (with even dimensions).
+          audio_path:
+            type: str | None
+            description: Path to the audio file, or None if silent.
+          pause_after:
+            type: float
+            description: Seconds of silence to append after the audio ends.
         """
         pass
 
     @abstractmethod
     def render(self) -> None:
-        """Compose all slides and write the final video file."""
+        """
+        title: Compose all slides and write the final video file.
+        """
         pass
 
 
 class MoviePyEngine(BaseVideoEngine):
-    """Render videos using the moviepy library."""
+    """
+    title: Render videos using the moviepy library.
+    """
 
     def __init__(self, output_path: str, fps: int = 24) -> None:
         super().__init__(output_path, fps)
@@ -76,7 +85,16 @@ class MoviePyEngine(BaseVideoEngine):
         audio_path: str | None,
         pause_after: float,
     ) -> None:
-        """Create a moviepy ImageClip and attach an AudioFileClip."""
+        """
+        title: Create a moviepy ImageClip and attach an AudioFileClip.
+        parameters:
+          image_path:
+            type: str
+          audio_path:
+            type: str | None
+          pause_after:
+            type: float
+        """
         if audio_path:
             audio_clip = AudioFileClip(audio_path)
             duration = audio_clip.duration + pause_after
@@ -92,7 +110,9 @@ class MoviePyEngine(BaseVideoEngine):
         self.clips.append(img_clip)
 
     def render(self) -> None:
-        """Concatenate all moviepy clips and write to disk."""
+        """
+        title: Concatenate all moviepy clips and write to disk.
+        """
         if not self.clips:
             raise ValueError("No slides to render.")
 
@@ -106,7 +126,9 @@ class MoviePyEngine(BaseVideoEngine):
 
 
 class FFmpegEngine(BaseVideoEngine):
-    """Render videos directly using ffmpeg-python."""
+    """
+    title: Render videos directly using ffmpeg-python.
+    """
 
     def __init__(self, output_path: str, fps: int = 24) -> None:
         super().__init__(output_path, fps)
@@ -118,7 +140,16 @@ class FFmpegEngine(BaseVideoEngine):
         audio_path: str | None,
         pause_after: float,
     ) -> None:
-        """Store slide paths and parameters for the ffmpeg graph."""
+        """
+        title: Store slide paths and parameters for the ffmpeg graph.
+        parameters:
+          image_path:
+            type: str
+          audio_path:
+            type: str | None
+          pause_after:
+            type: float
+        """
         self.slides.append(
             {
                 "image": image_path,
@@ -134,7 +165,20 @@ class FFmpegEngine(BaseVideoEngine):
         tmpdir: str,
         pbar: tqdm,
     ) -> str:
-        """Render a single slide to a TS file."""
+        """
+        title: Render a single slide to a TS file.
+        parameters:
+          idx:
+            type: int
+          instr:
+            type: dict[str, Any]
+          tmpdir:
+            type: str
+          pbar:
+            type: tqdm
+        returns:
+          type: str
+        """
         ts_output = os.path.join(tmpdir, f"slide_{idx:04d}.ts")
 
         v_stream = ffmpeg.input(
@@ -208,7 +252,9 @@ class FFmpegEngine(BaseVideoEngine):
         return ts_output
 
     def render(self) -> None:
-        """Build intermediate TS files for each slide and stream-copy them."""
+        """
+        title: Build intermediate TS files for each slide and stream-copy them.
+        """
         if not self.slides:
             raise ValueError("No slides to render.")
 

@@ -1,4 +1,6 @@
-"""Set of tests for the videos module."""
+"""
+title: Set of tests for the videos module.
+"""
 
 import os
 
@@ -18,7 +20,9 @@ os.makedirs(TMP_PATH, exist_ok=True)
 
 
 def test_combine_video_and_audio():
-    """Test the function that combines video and audio."""
+    """
+    title: Test the function that combines video and audio.
+    """
     # Example usage
     # "The Legend of Zelda Tears of the Kingdom - Official Trailer 3.mp4"
     video_path = TEST_DATA_DIR / "videos" / "pixabay-fuji.mp4"
@@ -35,7 +39,9 @@ def test_combine_video_and_audio():
 
 
 def test_download_from_youtube():
-    """Test the method that downloads videos from youtube."""
+    """
+    title: Test the method that downloads videos from youtube.
+    """
     # "https://www.youtube.com/watch?v=uHGShqcAHlQ"
     for i, url in enumerate(
         [
@@ -52,7 +58,9 @@ def test_download_from_youtube():
 
 
 def test_remove_audio():
-    """Test the function that removes audio from a video."""
+    """
+    title: Test the function that removes audio from a video.
+    """
     input_file = TMP_PATH / (
         "Princess Peachs Training Course in The Super Mario Bros Movie.mp4"
     )

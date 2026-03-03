@@ -1,4 +1,6 @@
-"""A set of methods and classes for handing and creating sounds."""
+"""
+title: A set of methods and classes for handing and creating sounds.
+"""
 
 import json
 
@@ -126,10 +128,19 @@ NOTES_FREQ = {
 
 
 class Sound(ArtBox):
-    """A set of methods for handing and creating sounds."""
+    """
+    title: A set of methods for handing and creating sounds.
+    """
 
     def process_notes(self, notes: list[str]) -> list[str]:
-        """Process notes according to the available notes' table."""
+        """
+        title: Process notes according to the available notes' table.
+        parameters:
+          notes:
+            type: list[str]
+        returns:
+          type: list[str]
+        """
         filtered_notes = []
 
         for note in notes:
@@ -151,12 +162,10 @@ class Sound(ArtBox):
 
     def notes_to_audio(self):
         """
-        Generate a simple melody using sine waves.
-
-        Returns
-        -------
-        pydub.AudioSegment
-            The generated melody.
+        title: Generate a simple melody using sine waves
+        returns:
+          type: pydub.AudioSegment
+          description: The generated melody.
         """
         notes_path = str(self.input_path)
         total_duration = float(self.args.get("duration", 0))
@@ -184,10 +193,10 @@ class Sound(ArtBox):
 
     def convert_to_8bit_audio(self) -> None:
         """
-        Extract audio from an MP4 file and convert it to a 16-bit.
-
-        The result audio would be similar to the sound used by SNES and
-        Sega Genesis.
+        title: Extract audio from an MP4 file and convert it to a 16-bit.
+        notes: |-
+          The result audio would be similar to the sound used by SNES and
+          Sega Genesis.
         """
         video_path = str(self.input_path)
         output_path = str(self.output_path)
@@ -230,17 +239,14 @@ class Sound(ArtBox):
 
     def frequency_to_note(self, frequency: float) -> str:
         """
-        Convert a frequency in Hz to a musical note.
-
-        Parameters
-        ----------
-        frequency : float
-            Frequency in Hz.
-
-        Returns
-        -------
-        str
-            Corresponding musical note (e.g., "A4", "C#5").
+        title: Convert a frequency in Hz to a musical note
+        parameters:
+          frequency:
+            type: float
+            description: Frequency in Hz.
+        returns:
+          type: str
+          description: Corresponding musical note (e.g., "A4", "C#5").
         """
         notes = [
             "C",
@@ -261,7 +267,11 @@ class Sound(ArtBox):
         return f"{notes[n]}{octave}"
 
     def extract_notes_from_mp3(self) -> list:
-        """Extra notes from a mp3 file."""
+        """
+        title: Extra notes from a mp3 file.
+        returns:
+          type: list
+        """
         mp3_path = str(self.input_path)
         output_notes = str(self.output_path)
 
@@ -304,7 +314,10 @@ class Sound(ArtBox):
         return notes
 
     def spectrogram(self):
-        """Generate a spectrogram from an MP3 file and saves it as an image."""
+        """
+        title: >-
+          Generate a spectrogram from an MP3 file and saves it as an image.
+        """
         mp3_file_path = str(self.input_path)
         output_file_path = str(self.output_path)
 

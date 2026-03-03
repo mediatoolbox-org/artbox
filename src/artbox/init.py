@@ -1,4 +1,6 @@
-"""Project initialization module."""
+"""
+title: Project initialization module.
+"""
 
 import os
 
@@ -11,11 +13,22 @@ from pptx import Presentation
 
 
 class FoldedString(str):
-    """Custom string class for folded block YAML formatting."""
+    """
+    title: Custom string class for folded block YAML formatting.
+    """
 
 
 def folded_string_representer(dumper: yaml.Dumper, data: str) -> yaml.Node:
-    """Represent FoldedString using the '>' style."""
+    """
+    title: Represent FoldedString using the '>' style.
+    parameters:
+      dumper:
+        type: yaml.Dumper
+      data:
+        type: str
+    returns:
+      type: yaml.Node
+    """
     return dumper.represent_scalar("tag:yaml.org,2002:str", data, style=">")
 
 
@@ -23,20 +36,26 @@ yaml.add_representer(FoldedString, folded_string_representer)
 
 
 class InitProject:
-    """Initialize a new Artbox project from source files."""
+    """
+    title: Initialize a new Artbox project from source files.
+    """
 
     def __init__(self, source_pdf: str, notes_pptx: str, output_path: str):
         """
-        Initialize the project scaffolding generator.
-
-        Parameters
-        ----------
-        source_pdf: str
-            Path to the PDF file to use as the visual slides.
-        notes_pptx: str
-            Path to the PPTX file to use for extracting presenter notes.
-        output_path: str
-            Path where the generated YAML project configuration will be saved.
+        title: Initialize the project scaffolding generator
+        parameters:
+          source_pdf:
+            type: str
+            description: Path to the PDF file to use as the visual slides.
+          notes_pptx:
+            type: str
+            description: >-
+              Path to the PPTX file to use for extracting presenter notes.
+          output_path:
+            type: str
+            description: >-
+              Path where the generated YAML project configuration will be
+              saved.
         """
         self.source_pdf = source_pdf
         self.notes_pptx = notes_pptx
@@ -44,11 +63,10 @@ class InitProject:
 
     def _extract_notes(self) -> list[str]:
         """
-        Extract presenter notes from each slide in the PPTX.
-
-        Returns
-        -------
-        list[str]
+        title: Extract presenter notes from each slide in the PPTX
+        returns:
+          type: list[str]
+          description: >-
             A list of extracted notes. Empty string if a slide has no notes.
         """
         prs = Presentation(self.notes_pptx)
@@ -66,11 +84,11 @@ class InitProject:
 
     def generate(self) -> None:
         """
-        Generate the project YAML configuration.
-
-        Extracts the notes from the provided PPTX file and constructs a
-        compliant dictionary mapping each note string to a page in the
-        source PDF.
+        title: Generate the project YAML configuration.
+        notes: |-
+          Extracts the notes from the provided PPTX file and constructs a
+          compliant dictionary mapping each note string to a page in the
+          source PDF.
         """
         if not os.path.exists(self.source_pdf):
             raise FileNotFoundError(f"Source PDF not found: {self.source_pdf}")

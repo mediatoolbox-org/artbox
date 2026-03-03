@@ -1,4 +1,6 @@
-"""ArtBox app to be called from `python -m`."""
+"""
+title: ArtBox app to be called from `python -m`.
+"""
 
 from artbox.cli import app
 
