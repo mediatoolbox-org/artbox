@@ -1,6 +1,13 @@
 # Release Notes
 ---
 
+## [0.13.1](https://github.com/mediatoolbox-org/artbox/compare/0.13.0...0.13.1) (2026-03-12)
+
+
+### Bug Fixes
+
+* Fix and update the documentation ([#43](https://github.com/mediatoolbox-org/artbox/issues/43)) ([73427c2](https://github.com/mediatoolbox-org/artbox/commit/73427c22b63626033f23a7e0c52b322ce34839b7))
+
 # [0.13.0](https://github.com/mediatoolbox-org/artbox/compare/0.12.0...0.13.0) (2026-03-12)
 
 

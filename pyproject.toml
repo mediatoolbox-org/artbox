@@ -1,6 +1,6 @@
 [project]
 name = "artbox"
-version = "0.13.0"  # semantic-release
+version = "0.13.1"  # semantic-release
 description = "ArtBox is a tool set for handling multimedia files."
 readme = "docs/index.md"
 license = {text = "BSD-3-Clause"}
