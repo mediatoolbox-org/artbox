@@ -1,6 +1,18 @@
 # Release Notes
 ---
 
+# [0.13.0](https://github.com/mediatoolbox-org/artbox/compare/0.12.0...0.13.0) (2026-03-12)
+
+
+### Bug Fixes
+
+* Change default audio engine to edge-tts ([#40](https://github.com/mediatoolbox-org/artbox/issues/40)) ([a617d22](https://github.com/mediatoolbox-org/artbox/commit/a617d22056b9374f3a0aa3ada7f74a957240bd87))
+
+
+### Features
+
+* Add attribute cache-dir ([#39](https://github.com/mediatoolbox-org/artbox/issues/39)) ([b4f2423](https://github.com/mediatoolbox-org/artbox/commit/b4f24235ff28e4443887e0d00364a556c2db2214))
+
 # [0.12.0](https://github.com/mediatoolbox-org/artbox/compare/0.11.0...0.12.0) (2026-02-28)
 
 
