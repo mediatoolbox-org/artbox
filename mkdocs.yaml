@@ -1,6 +1,6 @@
 site_name: ArtBox
 site_url: https://ggpedia.github.io/artbox
-repo_url: https://github.com/ggpedia/artbox
+repo_url: https://github.com/mediatoolbox-org/artbox
 docs_dir: ./docs
 site_dir: ./build
 # extra_css:
@@ -9,10 +9,10 @@ site_dir: ./build
 nav:
   - index.md
   - Installation: installation.md
+  - Projects: projects.md
   - Changelog: changelog.md
   - Contributing: contributing.md
   - API: api/references.md
-  - Notebook page: example.ipynb
 theme:
   name: material
   features:
@@ -26,8 +26,8 @@ theme:
     - search.suggest
   icon:
     repo: fontawesome/brands/github
-  logo: /images/logo.png
-  favicon: /images/favicon.png
+  logo: images/logo.png
+  favicon: images/favicon.ico
   palette:
     scheme: slate
     primary: white
@@ -46,8 +46,6 @@ plugins:
         python:
           paths: [../src]
 
-          import:
-            - https://docs.python.org/3/objects.inv
           options:
             docstring_style: numpy
             filters:
@@ -86,7 +84,6 @@ plugins:
             show_root_heading: true
             show_root_toc_entry: true
             show_source: false
-            show_modules: true
   - mkdocs-jupyter:
       execute: true
       ignore:
@@ -123,7 +120,7 @@ markdown_extensions:
   - tables
   - toc
 extra:
-  project_name: "GGPEDIA Youtube"
+  project_name: "ArtBox"
   team:
     - name: "Active maintainers"
       members:
@@ -135,11 +132,11 @@ extra:
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/xmnlab
     - icon: fontawesome/brands/github
-      link: https://github.com/ggpedia/artbox
+      link: https://github.com/mediatoolbox-org/artbox
   support_levels:
     supported:
       icon: :material-check-decagram:{ .verified }
-      description: Tested in CI. If this doesn't work for you, please [file an issue](https://github.com/ggpedia/artbox/issues/new).
+      description: Tested in CI. If this doesn't work for you, please [file an issue](https://github.com/mediatoolbox-org/artbox/issues/new).
     bug:
       icon: :material-bug:{ .bug }
       description: Should work but doesn't because upstream is broken. Supported on a best-effort basis.
@@ -147,4 +144,4 @@ extra:
       icon: :material-cancel:{ .cancel }
       description: Unlikely to ever be supported or no upstream support.
 
-copyright: "Copyright &copy; 2022, GGPEDIA Youtube Team"
+copyright: "Copyright &copy; 2022, ArtBox Team"

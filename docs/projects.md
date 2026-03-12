@@ -170,7 +170,7 @@ Once your YAML script is ready to go, the final step is incredibly simple. Pass
 your project configuration to the `artbox render` pipeline:
 
 ```bash
-artbox render my_project.yaml
+artbox render --project my_project.yaml
 ```
 
 _Note: If you are utilizing the `openai-tts` audio engine, ensure you have
@@ -178,7 +178,7 @@ exported your `OPENAI_API_KEY` to your environment beforehand, or pass it via
 the CLI like so:_
 
 ```bash
-artbox --env-file .env render my_project.yaml
+artbox --env-file .env render --project my_project.yaml
 ```
 
 Artbox will sequentially parse every slide, generate high definition images from
