@@ -449,6 +449,56 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#supported-audio-engines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Audio Engines
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supported Audio Engines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-edge-tts-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. edge-tts (Default)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-openai-tts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. openai-tts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gtts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. gtts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#the-slides-timeline" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -527,6 +577,7 @@ for the video rendering engine.</p>
 <p>The YAML relies on three massive foundational pillars: <strong>audio</strong>, <strong>video</strong>, and
 <strong>slides</strong>. Here is a high-level look at the structure:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_project</span>
+<span class="nt">cache-dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-saved-artifacts</span><span class="w"> </span><span class="c1"># (Optional) Directory to save intermediate resources</span>
 <span class="nt">source</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pdf</span>
 <span class="w">  </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">presentation.pdf</span>
@@ -537,12 +588,12 @@ for the video rendering engine.</p>
 
 <span class="c1"># Audio Engine Configuration</span>
 <span class="nt">audio</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">engine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai-tts</span>
+<span class="w">  </span><span class="nt">engine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edge-tts</span>
 <span class="w">  </span><span class="nt">instruction</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># (Optional) Path to a text file with advanced voice prompt instructions</span>
 <span class="w">  </span><span class="nt">defaults</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">gender</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">male</span>
+<span class="w">    </span><span class="nt">gender</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">female</span>
 <span class="w">    </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">en</span>
-<span class="w">    </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts-1</span>
+<span class="w">    </span><span class="nt">voice-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">en-US-AriaNeural</span>
 <span class="w">    </span><span class="nt">pitch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
 <span class="w">    </span><span class="nt">speed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
 <span class="w">    </span><span class="nt">volume</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
@@ -562,15 +613,54 @@ for the video rendering engine.</p>
 </code></pre></div>
 <h3 id="global-configuration-blocks">Global Configuration Blocks</h3>
 <ul>
+<li><strong><code>cache-dir</code></strong> <em>(Optional)</em>: Artbox securely orchestrates videos by spinning
+  up localized <code>/tmp</code> resources for audio loops and image framing, which are
+  explicitly garbage-collected before returning your output <code>MP4</code>. If you
+  declare a <code>cache-dir</code>, the intermediate cropped background png files and AI
+  <code>.mp3</code> generations will be permanently persisted here instead of deleted!</li>
 <li><strong><code>video.engine</code></strong>: The backend framework building your MP4. It natively
   supports <code>ffmpeg</code> (fast, lightweight) or <code>moviepy</code> (robust framing).</li>
 <li><strong><code>audio.engine</code></strong>: The backend framework resolving text-to-speech. Supports
-  <code>edge-tts</code>, <code>gtts</code>, or <code>openai-tts</code>.</li>
+  <code>edge-tts</code>, <code>gtts</code>, or <code>openai-tts</code>. Defaults to <code>edge-tts</code>.</li>
 <li><strong><code>audio.instruction</code></strong> <em>(Optional)</em>: If your selected audio engine supports
   system-prompting (like OpenAI's experimental streaming models), you can point
   this to a text file (e.g., <code>/tmp/voice-rules.md</code>). The engine will read the
   file and inject those instructions directly into the TTS generation!</li>
 <li><strong><code>audio.defaults</code></strong>: These are the baseline metrics applied to all slides.</li>
+</ul>
+<hr />
+<h3 id="supported-audio-engines">Supported Audio Engines</h3>
+<p>Artbox seamlessly supports multiple Text-To-Speech (TTS) engines, allowing you
+to optimize for cost, quality, and API access using the <code>audio.engine</code> value.</p>
+<h4 id="1-edge-tts-default">1. <code>edge-tts</code> (Default)</h4>
+<p>Microsoft Edge's native free TTS engine. It does not require any API keys.</p>
+<ul>
+<li><strong><code>voice-id</code></strong>: The explicit Edge voice string (e.g. <code>en-US-AriaNeural</code>,
+  <code>en-GB-RyanNeural</code>).</li>
+<li><strong><code>language</code></strong>: The language spoken (e.g. <code>english</code>, <code>spanish</code>).</li>
+<li><strong><code>gender</code></strong>: Determines the voice fallback (<code>male</code> or <code>female</code>) if <code>voice-id</code>
+  is not declared.</li>
+<li><strong><code>pitch</code> / <code>speed</code> / <code>volume</code></strong>: Numeric pacing and audio factors (e.g.,
+  <code>1.0</code> is natively neutral).</li>
+</ul>
+<h4 id="2-openai-tts">2. <code>openai-tts</code></h4>
+<p>OpenAI's state-of-the-art conversational TTS models. Requires <code>OPENAI_API_KEY</code>
+exported in your terminal environment.</p>
+<ul>
+<li><strong><code>model</code></strong>: The underlying OpenAI algorithm (e.g. <code>tts-1</code>,
+  <code>gpt-4o-mini-tts</code>).</li>
+<li><strong><code>voice-id</code></strong>: The configured OpenAI voice actor string (e.g. <code>alloy</code>,
+  <code>echo</code>, <code>fable</code>, <code>onyx</code>, <code>nova</code>, <code>shimmer</code>).</li>
+<li><strong><code>instruction</code></strong>: Advanced system-prompting! Used to dynamically govern tone,
+  expression, and timing. <em>Note: As of now, instructions are strictly only
+  supported when using the <code>gpt-4o-mini-tts</code> model!</em></li>
+<li><strong><code>speed</code></strong>: Numeric scaling factor from <code>0.25</code> to <code>4.0</code>.</li>
+</ul>
+<h4 id="3-gtts">3. <code>gtts</code></h4>
+<p>Google Translate's native fallback algorithm. Entirely free but produces very
+direct, mechanical voices.</p>
+<ul>
+<li><strong><code>language</code></strong>: Supported <code>gtts</code> language tags (e.g., <code>en</code>, <code>es</code>).</li>
 </ul>
 <h3 id="the-slides-timeline">The Slides Timeline</h3>
 <p>The <code>slides</code> property houses the sequence of your video. It defines <code>defaults</code>
